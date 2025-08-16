@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elara-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: elara-backend
+  template:
+    metadata:
+      labels:
+        app: elara-backend
+    spec:
+      containers:
+      - name: elara-backend
+        image: elara-backend:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DEBUG
+          value: "False"
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: elara-secrets
+              key: secret-key
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elara-backend-service
+spec:
+  selector:
+    app: elara-backend
+  ports:
+  - port: 8000
+    targetPort: 8000
+  type: LoadBalancer
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elara-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: elara-frontend
+  template:
+    metadata:
+      labels:
+        app: elara-frontend
+    spec:
+      containers:
+      - name: elara-frontend
+        image: elara-frontend:latest
+        ports:
+        - containerPort: 3000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elara-frontend-service
+spec:
+  selector:
+    app: elara-frontend
+  ports:
+  - port: 3000
+    targetPort: 3000
+  type: LoadBalancer
