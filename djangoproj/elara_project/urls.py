@@ -7,6 +7,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('djangoapp.products.urls')),
     path('api/', include('djangoapp.orders.urls')),
+    path('api/auth/', include('djangoapp.users.urls')),
 ]
 
 if settings.DEBUG:
