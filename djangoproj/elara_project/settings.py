@@ -58,7 +58,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'elara_project.urls'
+ROOT_URLCONF = 'djangoproj.elara_project.urls'
 
 TEMPLATES = [
     {
@@ -76,7 +76,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'elara_project.wsgi.application'
+WSGI_APPLICATION = 'djangoproj.elara_project.wsgi.application'
 
 
 # Database
@@ -149,7 +149,7 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 # Static files
-STATIC_ROOT = os.path.join(BASE_DIR.parent, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR.parent, 'staticfiles')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR.parent, 'static'),
 ]
@@ -157,3 +157,6 @@ STATICFILES_DIRS = [
 # Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR.parent, 'media')
+
+# Custom user model
+AUTH_USER_MODEL = 'users.User'
