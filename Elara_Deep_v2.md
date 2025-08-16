@@ -1,7 +1,7 @@
-# Project Elara
+# Elara
 
 ## Vision
-Project Elara is a next-generation AI-powered e-commerce platform designed to merge shopping convenience, personalization, and intelligent product discovery. By leveraging Django for the backend and React for the frontend, it provides scalability, security, and seamless user experience.
+Elara is a next-generation AI-powered e-commerce platform designed to merge shopping convenience, personalization, and intelligent product discovery. By leveraging Django for the backend and React for the frontend, it provides scalability, security, and seamless user experience.
 
 ## Technical Architecture
 
@@ -35,12 +35,3 @@ elara/
 - **Users**: Authentication, profiles, and roles
 - **Orders**: Cart, checkout, and payment integration
 - **Assistant**: AI-driven shopping helper with personalized recommendations
-
-## Development Roadmap
-
-- **Phase 1**: Setup Django project, database, and Docker environment
-- **Phase 2**: Implement Products and Users apps with API endpoints
-- **Phase 3**: Add Orders and payment gateway integration
-- **Phase 4**: Develop AI Assistant with conversational interface
-- **Phase 5**: Integrate React frontend with Django APIs
-- **Phase 6**: Deployment and scaling (Kubernetes, Railway, or AWS)

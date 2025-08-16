@@ -4,12 +4,12 @@ AI-powered e-commerce solution with Django backend and React TypeScript frontend
 
 ## Features
 
-- 🛍️ Product catalog with categories
-- 🛒 Shopping cart functionality
-- 👤 User authentication and profiles
-- 🤖 AI shopping assistant
-- 📱 Responsive design with Tailwind CSS
-- 🔒 Secure API endpoints
+-  Product catalog with categories
+-  Shopping cart functionality
+-  User authentication and profiles
+-  AI shopping assistant
+-  Responsive design with Tailwind CSS
+-  Secure API endpoints
 
 ## Tech Stack
 
@@ -35,6 +35,7 @@ python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 python manage.py migrate
+python manage.py populate_db
 python manage.py runserver
 ```
 
@@ -45,9 +46,24 @@ npm install
 npm start
 ```
 
-3. **Create Admin User:**
+3. **Admin Access:**
+- Username: `admin`
+- Password: `admin123`
+- URL: `http://localhost:8000/admin/`
+
+### Quick Setup (All-in-one)
 ```bash
-python manage.py createsuperuser
+# Backend
+python -m venv venv && source venv/bin/activate
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py populate_db
+
+# Frontend
+cd web && npm install && cd ..
+
+# Start backend
+python manage.py runserver
 ```
 
 ### Docker Setup
@@ -70,15 +86,33 @@ docker-compose up --build
 
 ```
 elara/
-├── djangoapp/          # Django applications
-│   ├── products/       # Product management
-│   ├── users/          # User authentication
-│   ├── orders/         # Cart and orders
-│   └── assistant/      # AI assistant
+├── djangoapp/          # Django application
+│   ├── migrations/     # Database migrations
+│   ├── templates/      # HTML templates
+│   ├── models.py       # Data models (Product, Cart, Order, etc.)
+│   ├── views.py        # API endpoints
+│   ├── urls.py         # URL routing
+│   ├── admin.py        # Admin interface
+│   └── populate.py     # Initial data setup
 ├── djangoproj/         # Django project settings
-├── web/                # React frontend
-├── static/             # Static files
-└── requirements.txt    # Python dependencies
+│   ├── settings.py     # Configuration
+│   ├── urls.py         # Main URL routing
+│   ├── wsgi.py         # WSGI config
+│   └── asgi.py         # ASGI config
+├── web/                # React TypeScript frontend
+│   ├── src/
+│   │   ├── components/ # React components
+│   │   ├── App.tsx     # Main app component
+│   │   └── index.tsx   # Entry point
+│   ├── public/         # Static assets
+│   └── package.json    # Frontend dependencies
+├── static/             # Collected static files
+├── venv/               # Python virtual environment
+├── requirements.txt    # Python dependencies
+├── manage.py           # Django management
+├── Dockerfile          # Container configuration
+├── deployment.yaml     # Kubernetes deployment
+└── entrypoint.sh       # Container startup script
 ```
 
 ## Deployment
