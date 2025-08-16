@@ -31,14 +31,17 @@ const ProductList: React.FC = () => {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h2>Products</h2>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+    <div className="p-6">
+      <h2 className="text-3xl font-bold mb-6 text-gray-800">Products</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {products.map((product) => (
-          <div key={product.id} style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '8px' }}>
-            <h3>{product.name}</h3>
-            <p>{product.description}</p>
-            <p style={{ fontSize: '18px', fontWeight: 'bold' }}>${product.price}</p>
+          <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+            <h3 className="text-xl font-semibold mb-2 text-gray-900">{product.name}</h3>
+            <p className="text-gray-600 mb-4 prose">{product.description}</p>
+            <p className="text-2xl font-bold text-blue-600">${product.price}</p>
+            <button className="mt-4 w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
+              Add to Cart
+            </button>
           </div>
         ))}
       </div>
