@@ -33,7 +33,10 @@ const ProductList: React.FC = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await api.get('/api/products');
+      const urlParams = new URLSearchParams(window.location.search);
+      const category = urlParams.get('category');
+      const url = category ? `/api/products/?search=${category}` : '/api/products/';
+      const response = await api.get(url);
       setProducts(response.data.products || []);
     } catch (error) {
       console.error('Error fetching products:', error);

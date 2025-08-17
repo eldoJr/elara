@@ -77,7 +77,7 @@ def get_products(request):
     category = request.GET.get('category')
     search = request.GET.get('search')
     brand = request.GET.get('brand')
-    limit = int(request.GET.get('limit', 20))
+    limit = int(request.GET.get('limit', 1000))
     offset = int(request.GET.get('offset', 0))
     
     # Try external database service first
@@ -94,6 +94,14 @@ def get_products(request):
             # Transform external API data for frontend compatibility
             products_data = []
             for product in products:
+                # Get category name
+                category_name = 'Uncategorized'
+                try:
+                    category = Category.objects.get(id=product.get('category_id'))
+                    category_name = category.name
+                except Category.DoesNotExist:
+                    pass
+                
                 products_data.append({
                     'id': product['id'],
                     'title': product['name'],
@@ -104,6 +112,7 @@ def get_products(request):
                     'rating': product.get('rating', 0),
                     'stock': product.get('stock_quantity', 0),
                     'brand': product.get('brand', ''),
+                    'category': category_name,
                     'thumbnail': product.get('image_url', ''),
                     'images': product.get('images', []),
                     'availabilityStatus': product.get('availability_status', 'In Stock'),
@@ -147,6 +156,7 @@ def get_products(request):
             'rating': float(product.rating or 0),
             'stock': product.stock_quantity,
             'brand': product.brand or '',
+            'category': product.category.name if product.category else 'Uncategorized',
             'thumbnail': product.image_url or '',
             'images': [product.image_url] if product.image_url else [],
             'availabilityStatus': product.availability_status,

@@ -27,6 +27,12 @@ const Navbar: React.FC = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">
+              <Link
+                to="/products"
+                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 text-sm font-medium transition-colors"
+              >
+                All Products
+              </Link>
               {categories.map((category) => (
                 <Link
                   key={category}
@@ -69,6 +75,13 @@ const Navbar: React.FC = () => {
       {isMenuOpen && (
         <div className="md:hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
           <div className="px-2 pt-2 pb-3 space-y-1">
+            <Link
+              to="/products"
+              className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white block px-3 py-2 text-base font-medium"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              All Products
+            </Link>
             {categories.map((category) => (
               <Link
                 key={category}
