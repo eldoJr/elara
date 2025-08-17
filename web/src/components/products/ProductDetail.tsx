@@ -129,9 +129,9 @@ const ProductDetail: React.FC = () => {
           <div className="space-y-4">
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-sm text-gray-600">{product.brand}</span>
+                <span className="text-sm text-gray-600">{product.brand || 'Unknown Brand'}</span>
                 <span className="text-sm text-gray-400">•</span>
-                <span className="text-sm text-gray-600">SKU: {product.sku}</span>
+                <span className="text-sm text-gray-600">SKU: {product.sku || 'N/A'}</span>
               </div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
                 {product.title}
@@ -139,30 +139,30 @@ const ProductDetail: React.FC = () => {
               <div className="flex items-center gap-2 mb-4">
                 <div className="flex items-center">
                   <span className="text-yellow-400 text-lg">★</span>
-                  <span className="text-lg font-medium ml-1">{product.rating.toFixed(1)}</span>
+                  <span className="text-lg font-medium ml-1">{(product.rating || 0).toFixed(1)}</span>
                 </div>
                 <span className="text-gray-400">•</span>
-                <span className="text-sm text-gray-600">{product.category}</span>
+                <span className="text-sm text-gray-600">{product.category || 'Uncategorized'}</span>
               </div>
             </div>
 
             <div className="border-t border-b py-4">
               <div className="flex items-center gap-3">
-                {product.discountPercentage > 0 ? (
+                {(product.discountPercentage || 0) > 0 ? (
                   <>
                     <span className="text-3xl font-bold text-green-600">
-                      ${product.discountedPrice.toFixed(2)}
+                      ${((product.price || 0) * (1 - (product.discountPercentage || 0) / 100)).toFixed(2)}
                     </span>
                     <span className="text-xl text-gray-500 line-through">
-                      ${product.price.toFixed(2)}
+                      ${(product.price || 0).toFixed(2)}
                     </span>
                     <span className="bg-red-100 text-red-800 px-2 py-1 rounded text-sm font-medium">
-                      {product.discountPercentage.toFixed(0)}% OFF
+                      {(product.discountPercentage || 0).toFixed(0)}% OFF
                     </span>
                   </>
                 ) : (
                   <span className="text-3xl font-bold text-gray-900">
-                    ${product.price.toFixed(2)}
+                    ${(product.price || 0).toFixed(2)}
                   </span>
                 )}
               </div>
@@ -183,9 +183,9 @@ const ProductDetail: React.FC = () => {
               }`}>
                 {product.availabilityStatus}
               </span>
-              {product.stock > 0 && (
+              {(product.stock || 0) > 0 && (
                 <span className="text-sm text-gray-600">
-                  {product.stock} items available
+                  {product.stock || 0} items available
                 </span>
               )}
             </div>
@@ -210,10 +210,10 @@ const ProductDetail: React.FC = () => {
                 variant="contained"
                 size="large"
                 onClick={addToCart}
-                disabled={product.availabilityStatus === 'Out of Stock'}
+                disabled={product.availabilityStatus === 'Out of Stock' || (product.stock || 0) === 0}
                 className="flex-1"
               >
-                {product.availabilityStatus === 'Out of Stock' ? 'Out of Stock' : 'Add to Cart'}
+                {(product.availabilityStatus === 'Out of Stock' || (product.stock || 0) === 0) ? 'Out of Stock' : 'Add to Cart'}
               </Button>
             </div>
           </div>

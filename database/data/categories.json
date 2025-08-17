@@ -1,0 +1,170 @@
+[
+  {
+    "id": 1,
+    "name": "Beauty",
+    "description": "Beauty products",
+    "is_active": true,
+    "created_at": "2025-08-17T04:41:40.463Z"
+  },
+  {
+    "id": 2,
+    "name": "Fragrances",
+    "description": "Fragrances products",
+    "is_active": true,
+    "created_at": "2025-08-17T04:41:40.463Z"
+  },
+  {
+    "id": 3,
+    "name": "Furniture",
+    "description": "Furniture products",
+    "is_active": true,
+    "created_at": "2025-08-17T04:41:40.463Z"
+  },
+  {
+    "id": 4,
+    "name": "Groceries",
+    "description": "Groceries products",
+    "is_active": true,
+    "created_at": "2025-08-17T04:41:40.463Z"
+  },
+  {
+    "id": 5,
+    "name": "Home Decoration",
+    "description": "Home Decoration products",
+    "is_active": true,
+    "created_at": "2025-08-17T04:41:40.463Z"
+  },
+  {
+    "id": 6,
+    "name": "Kitchen Accessories",
+    "description": "Kitchen Accessories products",
+    "is_active": true,
+    "created_at": "2025-08-17T04:41:40.463Z"
+  },
+  {
+    "id": 7,
+    "name": "Laptops",
+    "description": "Laptops products",
+    "is_active": true,
+    "created_at": "2025-08-17T04:41:40.463Z"
+  },
+  {
+    "id": 8,
+    "name": "Mens Shirts",
+    "description": "Mens Shirts products",
+    "is_active": true,
+    "created_at": "2025-08-17T04:41:40.463Z"
+  },
+  {
+    "id": 9,
+    "name": "Mens Shoes",
+    "description": "Mens Shoes products",
+    "is_active": true,
+    "created_at": "2025-08-17T04:41:40.463Z"
+  },
+  {
+    "id": 10,
+    "name": "Mens Watches",
+    "description": "Mens Watches products",
+    "is_active": true,
+    "created_at": "2025-08-17T04:41:40.463Z"
+  },
+  {
+    "id": 11,
+    "name": "Mobile Accessories",
+    "description": "Mobile Accessories products",
+    "is_active": true,
+    "created_at": "2025-08-17T04:41:40.463Z"
+  },
+  {
+    "id": 12,
+    "name": "Motorcycle",
+    "description": "Motorcycle products",
+    "is_active": true,
+    "created_at": "2025-08-17T04:41:40.463Z"
+  },
+  {
+    "id": 13,
+    "name": "Skin Care",
+    "description": "Skin Care products",
+    "is_active": true,
+    "created_at": "2025-08-17T04:41:40.463Z"
+  },
+  {
+    "id": 14,
+    "name": "Smartphones",
+    "description": "Smartphones products",
+    "is_active": true,
+    "created_at": "2025-08-17T04:41:40.463Z"
+  },
+  {
+    "id": 15,
+    "name": "Sports Accessories",
+    "description": "Sports Accessories products",
+    "is_active": true,
+    "created_at": "2025-08-17T04:41:40.463Z"
+  },
+  {
+    "id": 16,
+    "name": "Sunglasses",
+    "description": "Sunglasses products",
+    "is_active": true,
+    "created_at": "2025-08-17T04:41:40.463Z"
+  },
+  {
+    "id": 17,
+    "name": "Tablets",
+    "description": "Tablets products",
+    "is_active": true,
+    "created_at": "2025-08-17T04:41:40.463Z"
+  },
+  {
+    "id": 18,
+    "name": "Tops",
+    "description": "Tops products",
+    "is_active": true,
+    "created_at": "2025-08-17T04:41:40.463Z"
+  },
+  {
+    "id": 19,
+    "name": "Vehicle",
+    "description": "Vehicle products",
+    "is_active": true,
+    "created_at": "2025-08-17T04:41:40.463Z"
+  },
+  {
+    "id": 20,
+    "name": "Womens Bags",
+    "description": "Womens Bags products",
+    "is_active": true,
+    "created_at": "2025-08-17T04:41:40.463Z"
+  },
+  {
+    "id": 21,
+    "name": "Womens Dresses",
+    "description": "Womens Dresses products",
+    "is_active": true,
+    "created_at": "2025-08-17T04:41:40.463Z"
+  },
+  {
+    "id": 22,
+    "name": "Womens Jewellery",
+    "description": "Womens Jewellery products",
+    "is_active": true,
+    "created_at": "2025-08-17T04:41:40.463Z"
+  },
+  {
+    "id": 23,
+    "name": "Womens Shoes",
+    "description": "Womens Shoes products",
+    "is_active": true,
+    "created_at": "2025-08-17T04:41:40.463Z"
+  },
+  {
+    "id": 24,
+    "name": "Womens Watches",
+    "description": "Womens Watches products",
+    "is_active": true,
+    "created_at": "2025-08-17T04:41:40.463Z"
+  }
+]

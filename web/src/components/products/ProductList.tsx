@@ -44,7 +44,7 @@ const ProductList: React.FC = () => {
 
   const addToCart = async (productId: number) => {
     try {
-      await api.post('/api/cart/add/', {
+      await api.post('/api/cart/add', {
         product_id: productId,
         quantity: 1
       });
@@ -84,9 +84,9 @@ const ProductList: React.FC = () => {
                   alt={product.title}
                   className="h-48 w-full object-cover rounded-t-lg"
                 />
-                {product.discountPercentage > 0 && (
+                {(product.discountPercentage || 0) > 0 && (
                   <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">
-                    -{product.discountPercentage.toFixed(0)}%
+                    -{(product.discountPercentage || 0).toFixed(0)}%
                   </div>
                 )}
               </div>
@@ -94,7 +94,7 @@ const ProductList: React.FC = () => {
                 <div className="flex items-center gap-2 mb-2">
                   <div className="flex items-center">
                     <span className="text-yellow-400">★</span>
-                    <span className="text-sm text-gray-600 ml-1">{product.rating.toFixed(1)}</span>
+                    <span className="text-sm text-gray-600 ml-1">{(product.rating || 0).toFixed(1)}</span>
                   </div>
                   <span className="text-xs text-gray-500">{product.brand}</span>
                 </div>
@@ -102,24 +102,24 @@ const ProductList: React.FC = () => {
                   {product.title}
                 </h2>
                 <p className="text-body-small text-secondary mb-2 flex-grow">
-                  {product.description.substring(0, 100)}...
+                  {(product.description || '').substring(0, 100)}...
                 </p>
                 <p className="text-caption text-tertiary mb-2">
-                  {product.category}
+                  {product.category || 'Uncategorized'}
                 </p>
                 <div className="flex items-center gap-2 mb-4">
-                  {product.discountPercentage > 0 ? (
+                  {(product.discountPercentage || 0) > 0 ? (
                     <>
                       <span className="text-heading-3 text-accent">
-                        ${product.discountedPrice.toFixed(2)}
+                        ${((product.price || 0) * (1 - (product.discountPercentage || 0) / 100)).toFixed(2)}
                       </span>
                       <span className="text-sm text-gray-500 line-through">
-                        ${product.price.toFixed(2)}
+                        ${(product.price || 0).toFixed(2)}
                       </span>
                     </>
                   ) : (
                     <span className="text-heading-3 text-accent">
-                      ${product.price.toFixed(2)}
+                      ${(product.price || 0).toFixed(2)}
                     </span>
                   )}
                 </div>
@@ -127,9 +127,9 @@ const ProductList: React.FC = () => {
                   <button
                     className="button-primary text-sm flex-1"
                     onClick={() => addToCart(product.id)}
-                    disabled={product.availabilityStatus === 'Out of Stock'}
+                    disabled={(product.availabilityStatus || product.stock === 0) === 'Out of Stock'}
                   >
-                    {product.availabilityStatus === 'Out of Stock' ? 'Out of Stock' : 'Add to Cart'}
+                    {(product.availabilityStatus === 'Out of Stock' || product.stock === 0) ? 'Out of Stock' : 'Add to Cart'}
                   </button>
                   <Link
                     to={`/products/${product.id}`}

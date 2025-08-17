@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: elara_mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: elara_db
+    volumes:
+      - mongodb_data:/data/db
+      - ./init-data:/docker-entrypoint-initdb.d
+    networks:
+      - elara_network
+
+  database_api:
+    build: .
+    container_name: elara_database_api
+    restart: unless-stopped
+    ports:
+      - "3030:3030"
+    environment:
+      MONGODB_URL: mongodb://mongodb:27017/elara_db
+      NODE_ENV: production
+    depends_on:
+      - mongodb
+    networks:
+      - elara_network
+
+volumes:
+  mongodb_data:
+
+networks:
+  elara_network:
+    driver: bridge

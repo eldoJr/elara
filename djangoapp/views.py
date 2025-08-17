@@ -10,6 +10,7 @@ import logging
 from decimal import Decimal
 
 from .models import Category, Product, Cart, CartItem, Order, OrderItem, UserProfile
+from .services.database_service import db_service
 
 logger = logging.getLogger(__name__)
 
@@ -72,21 +73,67 @@ def logout_request(request):
 
 
 def get_products(request):
-    """Get all products or filter by category"""
-    category_id = request.GET.get('category')
-    search = request.GET.get('search', '')
+    """Get all products from database API with fallback to local DB"""
+    category = request.GET.get('category')
+    search = request.GET.get('search')
+    brand = request.GET.get('brand')
+    limit = int(request.GET.get('limit', 20))
+    offset = int(request.GET.get('offset', 0))
     
-    products = Product.objects.filter(is_active=True)
-    
-    if category_id:
-        products = products.filter(category_id=category_id)
-    
-    if search:
-        products = products.filter(
-            models.Q(name__icontains=search) | 
-            models.Q(description__icontains=search) |
-            models.Q(brand__icontains=search)
+    # Try external database service first
+    try:
+        products = db_service.get_products(
+            category=int(category) if category else None,
+            brand=brand,
+            search=search,
+            limit=limit,
+            offset=offset
         )
+        
+        if products:
+            # Transform external API data for frontend compatibility
+            products_data = []
+            for product in products:
+                products_data.append({
+                    'id': product['id'],
+                    'title': product['name'],
+                    'name': product['name'],
+                    'description': product['description'],
+                    'price': product['price'],
+                    'discountPercentage': product.get('discount_percentage', 0),
+                    'rating': product.get('rating', 0),
+                    'stock': product.get('stock_quantity', 0),
+                    'brand': product.get('brand', ''),
+                    'thumbnail': product.get('image_url', ''),
+                    'images': product.get('images', []),
+                    'availabilityStatus': product.get('availability_status', 'In Stock'),
+                    'sku': product.get('sku', ''),
+                })
+            
+            return JsonResponse({
+                "products": products_data,
+                "total": len(products_data),
+                "skip": offset,
+                "limit": limit
+            })
+    except Exception as e:
+        logger.warning(f"External database service failed: {e}. Using local database.")
+    
+    # Fallback to local database
+    queryset = Product.objects.filter(is_active=True)
+    
+    if category:
+        queryset = queryset.filter(category_id=category)
+    if brand:
+        queryset = queryset.filter(brand__icontains=brand)
+    if search:
+        queryset = queryset.filter(
+            models.Q(name__icontains=search) | 
+            models.Q(description__icontains=search)
+        )
+    
+    total_count = queryset.count()
+    products = queryset[offset:offset + limit]
     
     products_data = []
     for product in products:
@@ -96,28 +143,51 @@ def get_products(request):
             'name': product.name,
             'description': product.description,
             'price': float(product.price),
-            'discountPercentage': float(product.discount_percentage),
-            'discountedPrice': float(product.discounted_price),
-            'rating': float(product.rating),
+            'discountPercentage': float(product.discount_percentage or 0),
+            'rating': float(product.rating or 0),
             'stock': product.stock_quantity,
-            'brand': product.brand,
-            'category': product.category.name,
-            'thumbnail': product.image_url,
-            'images': product.images,
+            'brand': product.brand or '',
+            'thumbnail': product.image_url or '',
+            'images': [product.image_url] if product.image_url else [],
             'availabilityStatus': product.availability_status,
-            'sku': product.sku,
+            'sku': product.sku or f'SKU-{product.id}',
         })
     
     return JsonResponse({
         "products": products_data,
-        "total": len(products_data),
-        "skip": 0,
-        "limit": len(products_data)
+        "total": total_count,
+        "skip": offset,
+        "limit": limit
     })
 
 
 def get_product_detail(request, product_id):
-    """Get detailed information about a specific product"""
+    """Get detailed information about a specific product with fallback to local DB"""
+    # Try external database service first
+    try:
+        product = db_service.get_product(int(product_id))
+        
+        if product:
+            product_data = {
+                'id': product['id'],
+                'title': product['name'],
+                'name': product['name'],
+                'description': product['description'],
+                'price': product['price'],
+                'discountPercentage': product.get('discount_percentage', 0),
+                'rating': product.get('rating', 0),
+                'stock': product.get('stock_quantity', 0),
+                'brand': product.get('brand', ''),
+                'thumbnail': product.get('image_url', ''),
+                'images': product.get('images', []),
+                'availabilityStatus': product.get('availability_status', 'In Stock'),
+                'sku': product.get('sku', ''),
+            }
+            return JsonResponse(product_data)
+    except Exception as e:
+        logger.warning(f"External database service failed: {e}. Using local database.")
+    
+    # Fallback to local database
     try:
         product = Product.objects.get(id=product_id, is_active=True)
         product_data = {
@@ -126,16 +196,14 @@ def get_product_detail(request, product_id):
             'name': product.name,
             'description': product.description,
             'price': float(product.price),
-            'discountPercentage': float(product.discount_percentage),
-            'discountedPrice': float(product.discounted_price),
-            'rating': float(product.rating),
+            'discountPercentage': float(product.discount_percentage or 0),
+            'rating': float(product.rating or 0),
             'stock': product.stock_quantity,
-            'brand': product.brand,
-            'category': product.category.name,
-            'thumbnail': product.image_url,
-            'images': product.images,
+            'brand': product.brand or '',
+            'thumbnail': product.image_url or '',
+            'images': [product.image_url] if product.image_url else [],
             'availabilityStatus': product.availability_status,
-            'sku': product.sku,
+            'sku': product.sku or f'SKU-{product.id}',
         }
         return JsonResponse(product_data)
     except Product.DoesNotExist:
@@ -143,15 +211,35 @@ def get_product_detail(request, product_id):
 
 
 def get_categories(request):
-    """Get all categories"""
-    categories = Category.objects.all()
+    """Get all categories from database API with fallback to local DB"""
+    # Try external database service first
+    try:
+        categories = db_service.get_categories()
+        
+        if categories:
+            categories_data = []
+            for category in categories:
+                categories_data.append({
+                    'id': category['id'],
+                    'name': category['name'],
+                    'description': category.get('description', ''),
+                    'image': category.get('image_url', ''),
+                })
+            
+            return JsonResponse({"categories": categories_data})
+    except Exception as e:
+        logger.warning(f"External database service failed: {e}. Using local database.")
+    
+    # Fallback to local database
+    categories = Category.objects.filter(is_active=True)
     categories_data = []
+    
     for category in categories:
         categories_data.append({
             'id': category.id,
             'name': category.name,
-            'description': category.description,
-            'image': category.image.url if category.image else None,
+            'description': category.description or '',
+            'image': category.image.url if category.image else '',
         })
     
     return JsonResponse({"categories": categories_data})
