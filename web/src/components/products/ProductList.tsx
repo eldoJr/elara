@@ -66,15 +66,18 @@ const ProductList: React.FC = () => {
   }, [sortBy]);
   
   useEffect(() => {
-    handleFiltersChange({
-      categories: activeFilters.categories.map(c => c.name),
-      brands: activeFilters.brands,
-      gender: activeFilters.gender,
-      colors: activeFilters.colors,
-      discount: activeFilters.discount,
-      rating: activeFilters.rating,
-      priceRange: activeFilters.priceRange
-    });
+    if (products.length > 0) {
+      const filters = {
+        categories: activeFilters.categories.map(c => c.name),
+        brands: activeFilters.brands,
+        gender: activeFilters.gender,
+        colors: activeFilters.colors,
+        discount: activeFilters.discount,
+        rating: activeFilters.rating,
+        priceRange: activeFilters.priceRange
+      };
+      handleFiltersChange(filters);
+    }
   }, [searchQuery]);
 
   const fetchProducts = async () => {
