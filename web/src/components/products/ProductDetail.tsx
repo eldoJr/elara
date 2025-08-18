@@ -91,7 +91,7 @@ const ProductDetail: React.FC = () => {
 
       <Grid container spacing={4} className="mt-4">
         {/* Product Images */}
-        <Grid size={{ xs: 12, md: 6 }}>
+        <Grid item xs={12} md={6}>
           <div className="space-y-4">
             <img
               src={selectedImage}
@@ -125,7 +125,7 @@ const ProductDetail: React.FC = () => {
         </Grid>
 
         {/* Product Info */}
-        <Grid size={{ xs: 12, md: 6 }}>
+        <Grid item xs={12} md={6}>
           <div className="space-y-4">
             <div>
               <div className="flex items-center gap-2 mb-2">
