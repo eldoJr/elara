@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight } from '@mui/icons-material';
 
 interface BreadcrumbItem {
   label: string;
@@ -13,21 +12,27 @@ interface BreadcrumbProps {
 
 const Breadcrumb: React.FC<BreadcrumbProps> = ({ items }) => {
   return (
-    <nav className="flex items-center space-x-2 text-sm text-gray-600 py-3">
+    <nav className="flex items-center space-x-2 text-sm py-3">
       {items.map((item, index) => (
         <React.Fragment key={index}>
           {index > 0 && (
-            <ChevronRight className="w-4 h-4 text-gray-400" />
+            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
           )}
           {item.path && index < items.length - 1 ? (
             <Link 
               to={item.path} 
-              className="hover:text-gray-900 transition-colors"
+              className="text-gray-600 dark:text-gray-400 hover:text-pink-600 dark:hover:text-pink-400 transition-colors font-medium"
             >
               {item.label}
             </Link>
           ) : (
-            <span className={index === items.length - 1 ? 'text-gray-900 font-medium' : ''}>
+            <span className={`${
+              index === items.length - 1 
+                ? 'text-gray-900 dark:text-white font-semibold' 
+                : 'text-gray-600 dark:text-gray-400'
+            }`}>
               {item.label}
             </span>
           )}

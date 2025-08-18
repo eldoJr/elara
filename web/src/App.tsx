@@ -6,6 +6,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { SearchProvider, useSearch } from './components/common/SearchProvider';
 import Navbar from './components/common/Navbar';
 import Header from './components/common/Header';
+import Footer from './components/common/Footer';
 import Home from './components/common/Home';
 import ProductList from './components/products/ProductList';
 import ProductDetail from './components/products/ProductDetail';
@@ -59,6 +60,7 @@ function App() {
             <Navbar />
             <Header />
             <MainContent />
+            <Footer />
           </div>
           </Router>
         </MuiThemeProvider>

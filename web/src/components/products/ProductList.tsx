@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Grid } from '@mui/material';
 import { useLocation } from 'react-router-dom';
 import api from '../../config/api';
 import Loading from '../common/Loading';
@@ -50,7 +49,9 @@ const ProductList: React.FC = () => {
   const [activeFilters, setActiveFilters] = useLocalStorage('productFilters', {
     categories: [] as { id: number; name: string }[],
     brands: [] as string[],
-    gender: [] as string[],
+    gender: '' as string,
+    colors: [] as string[],
+    discount: '' as string,
     rating: null as number | null,
     priceRange: [0, 1000] as number[]
   });
@@ -69,6 +70,8 @@ const ProductList: React.FC = () => {
       categories: activeFilters.categories.map(c => c.name),
       brands: activeFilters.brands,
       gender: activeFilters.gender,
+      colors: activeFilters.colors,
+      discount: activeFilters.discount,
       rating: activeFilters.rating,
       priceRange: activeFilters.priceRange
     });
@@ -116,13 +119,11 @@ const ProductList: React.FC = () => {
       );
     }
     
-    // Filter by gender (check if product category contains gender keywords)
-    if (filters.gender.length > 0) {
+    // Filter by gender
+    if (filters.gender) {
       filtered = filtered.filter(product => 
-        filters.gender.some((gender: string) => 
-          product.category?.toLowerCase().includes(gender.toLowerCase()) ||
-          product.title?.toLowerCase().includes(gender.toLowerCase())
-        )
+        product.category?.toLowerCase().includes(filters.gender.toLowerCase()) ||
+        product.title?.toLowerCase().includes(filters.gender.toLowerCase())
       );
     }
     
@@ -151,6 +152,8 @@ const ProductList: React.FC = () => {
       categories: categoryObjects,
       brands: filters.brands,
       gender: filters.gender,
+      colors: filters.colors,
+      discount: filters.discount,
       rating: filters.rating,
       priceRange: filters.priceRange
     });
@@ -193,7 +196,13 @@ const ProductList: React.FC = () => {
         newFilters.brands = newFilters.brands.filter(b => b !== value);
         break;
       case 'gender':
-        newFilters.gender = newFilters.gender.filter(g => g !== value);
+        newFilters.gender = '';
+        break;
+      case 'color':
+        newFilters.colors = newFilters.colors.filter(c => c !== value);
+        break;
+      case 'discount':
+        newFilters.discount = '';
         break;
       case 'rating':
         newFilters.rating = null;
@@ -208,6 +217,8 @@ const ProductList: React.FC = () => {
       categories: newFilters.categories.map(c => c.name),
       brands: newFilters.brands,
       gender: newFilters.gender,
+      colors: newFilters.colors,
+      discount: newFilters.discount,
       rating: newFilters.rating,
       priceRange: newFilters.priceRange
     });
@@ -217,7 +228,9 @@ const ProductList: React.FC = () => {
     const emptyFilters = {
       categories: [],
       brands: [],
-      gender: [],
+      gender: '',
+      colors: [],
+      discount: '',
       rating: null,
       priceRange: [0, 1000]
     };
@@ -253,176 +266,164 @@ const ProductList: React.FC = () => {
     }
   };
 
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   if (loading) {
     return (
-      <Container className="py-16">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
         <Loading size="large" text="Loading products..." />
-      </Container>
+      </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Container maxWidth="xl" className="py-8">
-        <Breadcrumb items={[
-          { label: 'Store', path: '/' },
-          { label: 'Products' }
-        ]} />
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex items-center justify-between py-1">
+          <Breadcrumb items={[
+            { label: 'Store', path: '/' },
+            { label: 'Products' }
+          ]} />
+          <h1 className="text-lg font-bold bg-gradient-to-r from-pink-600 via-orange-500 to-blue-600 bg-clip-text text-transparent">
+            Our Products
+          </h1>
+        </div>
         
-        <h1 className="text-heading-1 text-primary text-center mb-8 mt-4">
-          Our Products
-        </h1>
-        
-        <div className="flex gap-6">
+        <div className="flex gap-6 pb-8">
           {/* Desktop Filter Sidebar */}
-          <div className="hidden md:block">
+          <div className="hidden lg:block">
             <FilterSidebar 
               onFiltersChange={handleFiltersChange}
               activeFilters={activeFilters}
             />
           </div>
-          
-          {/* Mobile Filter Drawer */}
-          <MobileFilterDrawer
-            isOpen={mobileFilterOpen}
-            onClose={() => setMobileFilterOpen(!mobileFilterOpen)}
-            onFiltersChange={handleFiltersChange}
-            activeFilters={activeFilters}
-          />
-          
+
+          {/* Main Content */}
           <div className="flex-1">
+            {/* Search Bar */}
             <div className="mb-6">
               <SearchAutocomplete
                 onSearch={setSearchQuery}
-                suggestions={Array.from(new Set(products.map(p => p.brand))).slice(0, 10)}
-                placeholder="Search products, brands, categories..."
+                placeholder="Search products..."
               />
             </div>
-            
-            <FilterChips
-              activeFilters={activeFilters}
-              onRemoveFilter={handleRemoveFilter}
-              onClearAll={handleClearAllFilters}
-            />
-            
-            <div className="flex items-center justify-between mb-6">
-              <ProductSorting 
+
+            {/* Filter Chips */}
+            <div className="mb-4">
+              <FilterChips
+                activeFilters={activeFilters}
+                onRemoveFilter={handleRemoveFilter}
+                onClearAll={handleClearAllFilters}
+              />
+            </div>
+
+            {/* Product Sorting */}
+            <div className="mb-6">
+              <ProductSorting
                 sortBy={sortBy}
                 onSortChange={handleSortChange}
                 totalProducts={filteredProducts.length}
                 view={view}
                 onViewChange={setView}
               />
-              
-              {comparisonProducts.length > 0 && (
-                <button
-                  onClick={() => setIsComparisonOpen(true)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-                >
-                  Compare ({comparisonProducts.length})
-                </button>
-              )}
             </div>
-            
-            {/* Paginated Products */}
-            {(() => {
-              const startIndex = (currentPage - 1) * itemsPerPage;
-              const endIndex = startIndex + itemsPerPage;
-              const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
-              const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-              
-              return (
-                <>
-                  {view === 'grid' ? (
-                    <Grid container spacing={3}>
-                      {paginatedProducts.map((product) => (
-                        <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={product.id}>
-                          <ProductCard 
-                            product={product} 
-                            onAddToCart={addToCart}
-                            onQuickView={(product) => setQuickViewProduct(product)}
-                            onToggleCompare={handleToggleCompare}
-                            isInComparison={comparisonProducts.some(p => p.id === product.id)}
-                          />
-                        </Grid>
-                      ))}
-                    </Grid>
-                  ) : (
-                    <div className="space-y-4">
-                      {paginatedProducts.map((product) => (
-                        <div key={product.id} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 flex gap-4 hover:shadow-md transition-shadow">
-                          <img
-                            src={product.thumbnail || '/placeholder-image.jpg'}
-                            alt={product.title}
-                            className="w-24 h-24 object-cover rounded-lg flex-shrink-0"
-                          />
-                          <div className="flex-1">
-                            <h3 className="font-medium text-gray-900 dark:text-white mb-1">{product.title}</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{product.brand}</p>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 line-clamp-2">{product.description}</p>
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-2">
-                                <span className="font-bold text-lg">${product.price.toFixed(2)}</span>
-                                <span className="text-yellow-400">★ {(product.rating || 0).toFixed(1)}</span>
-                              </div>
-                              <button
-                                onClick={() => addToCart(product.id)}
-                                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
-                              >
-                                Add to Cart
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  
-                  <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={setCurrentPage}
-                    itemsPerPage={itemsPerPage}
-                    totalItems={filteredProducts.length}
-                  />
-                </>
-              );
-            })()}
-            
 
-            
-            {filteredProducts.length === 0 && !loading && (
-              <div className="text-center py-12">
-                <p className="text-gray-500 dark:text-gray-400 text-lg">
-                  No products found matching your filters.
+            {/* Products Grid */}
+            <div>
+            {filteredProducts.length === 0 ? (
+              <div className="text-center py-16">
+                <div className="text-6xl mb-4">🔍</div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  No products found
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Try adjusting your filters or search terms
                 </p>
               </div>
+            ) : (
+              <>
+                <div className={`grid gap-6 mb-8 ${
+                  view === 'grid' 
+                    ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
+                    : 'grid-cols-1'
+                }`}>
+                  {paginatedProducts.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      onAddToCart={addToCart}
+                      onQuickView={setQuickViewProduct}
+                      onToggleCompare={handleToggleCompare}
+                      isInComparison={comparisonProducts.some(p => p.id === product.id)}
+                      view={view}
+                    />
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={Math.ceil(filteredProducts.length / itemsPerPage)}
+                  onPageChange={setCurrentPage}
+                />
+              </>
             )}
+            </div>
           </div>
         </div>
-        
-        {/* URL Filter Synchronization */}
-        <URLFilterSync
-          activeFilters={activeFilters}
+
+        {/* Mobile Filter Button */}
+        <button
+          onClick={() => setMobileFilterOpen(true)}
+          className="lg:hidden fixed bottom-6 right-6 bg-gradient-to-r from-pink-500 to-orange-500 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all z-50"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+          </svg>
+        </button>
+
+        {/* Mobile Filter Drawer */}
+        <MobileFilterDrawer
+          open={mobileFilterOpen}
+          onClose={() => setMobileFilterOpen(false)}
           onFiltersChange={handleFiltersChange}
+          activeFilters={activeFilters}
         />
-        
+
         {/* Quick View Modal */}
-        <QuickViewModal
-          product={quickViewProduct}
-          isOpen={!!quickViewProduct}
-          onClose={() => setQuickViewProduct(null)}
-          onAddToCart={addToCart}
-        />
-        
-        {/* Product Comparison Modal */}
-        <ProductComparison
-          products={comparisonProducts}
-          isOpen={isComparisonOpen}
-          onClose={() => setIsComparisonOpen(false)}
-          onAddToCart={addToCart}
-        />
-      </Container>
+        {quickViewProduct && (
+          <QuickViewModal
+            product={quickViewProduct}
+            onClose={() => setQuickViewProduct(null)}
+            onAddToCart={addToCart}
+          />
+        )}
+
+        {/* Product Comparison */}
+        {comparisonProducts.length > 0 && (
+          <div className="fixed bottom-6 left-6 z-50">
+            <button
+              onClick={() => setIsComparisonOpen(true)}
+              className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
+            >
+              <span>Compare ({comparisonProducts.length})</span>
+            </button>
+          </div>
+        )}
+
+        {isComparisonOpen && (
+          <ProductComparison
+            products={comparisonProducts}
+            onClose={() => setIsComparisonOpen(false)}
+            onRemoveProduct={(id) => handleToggleCompare(id, false)}
+          />
+        )}
+
+        <URLFilterSync activeFilters={activeFilters} />
+      </div>
     </div>
   );
 };

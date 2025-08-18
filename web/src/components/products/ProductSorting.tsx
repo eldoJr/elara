@@ -1,5 +1,4 @@
 import React from 'react';
-import { FormControl, Select, MenuItem, Typography } from '@mui/material';
 import ViewToggle from './ViewToggle';
 
 interface ProductSortingProps {
@@ -26,30 +25,35 @@ const ProductSorting: React.FC<ProductSortingProps> = ({
   ];
 
   return (
-    <div className="flex items-center justify-between mb-6 bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
-      <Typography variant="body2" className="text-gray-600 dark:text-gray-300">
-        Showing {totalProducts} products
-      </Typography>
+    <div className="flex items-center justify-between mb-6 bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+      <div className="flex items-center gap-2">
+        <span className="text-sm font-medium text-gray-900 dark:text-white">
+          {totalProducts}
+        </span>
+        <span className="text-sm text-gray-600 dark:text-gray-400">
+          products found
+        </span>
+      </div>
       
       <div className="flex items-center gap-4">
         <ViewToggle view={view} onViewChange={onViewChange} />
         
-        <Typography variant="body2" className="text-gray-600 dark:text-gray-300">
-          Sort by:
-        </Typography>
-        <FormControl size="small" className="min-w-48">
-          <Select
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-gray-600 dark:text-gray-400">
+            Sort by:
+          </span>
+          <select
             value={sortBy}
             onChange={(e) => onSortChange(e.target.value)}
-            className="text-sm"
+            className="text-sm bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors"
           >
             {sortOptions.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
+              <option key={option.value} value={option.value}>
                 {option.label}
-              </MenuItem>
+              </option>
             ))}
-          </Select>
-        </FormControl>
+          </select>
+        </div>
       </div>
     </div>
   );

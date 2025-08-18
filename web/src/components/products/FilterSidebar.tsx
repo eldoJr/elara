@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Checkbox, FormControlLabel, FormGroup, Typography, Slider, Button } from '@mui/material';
+import GenderFilter from '../filters/GenderFilter';
+import CategoryFilter from '../filters/CategoryFilter';
+import BrandFilter from '../filters/BrandFilter';
+import PriceFilter from '../filters/PriceFilter';
+import ColorFilter from '../filters/ColorFilter';
+import DiscountFilter from '../filters/DiscountFilter';
 import api from '../../config/api';
 
 interface FilterSidebarProps {
@@ -7,55 +12,58 @@ interface FilterSidebarProps {
   activeFilters?: any;
 }
 
-interface Category {
-  id: number;
-  name: string;
-}
-
-const FilterSidebar: React.FC<FilterSidebarProps> = ({ onFiltersChange, activeFilters }) => {
-  const [categories, setCategories] = useState<Category[]>([]);
+const FilterSidebar: React.FC<FilterSidebarProps> = ({ onFiltersChange }) => {
+  const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState<string[]>([]);
+  
+  // Filter states
+  const [selectedGender, setSelectedGender] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
-  const [selectedGender, setSelectedGender] = useState<string[]>([]);
-  const [selectedRating, setSelectedRating] = useState<number | null>(null);
   const [priceRange, setPriceRange] = useState<number[]>([0, 1000]);
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [selectedDiscount, setSelectedDiscount] = useState('');
 
-  const genderOptions = ['Men', 'Women', 'Boys', 'Girls'];
-  const ratingOptions = [4, 3, 2, 1];
+  const colors = [
+    { name: 'Black', hex: '#000000' },
+    { name: 'White', hex: '#ffffff' },
+    { name: 'Red', hex: '#ef4444' },
+    { name: 'Blue', hex: '#3b82f6' },
+    { name: 'Green', hex: '#10b981' },
+    { name: 'Pink', hex: '#ec4899' },
+    { name: 'Yellow', hex: '#f59e0b' },
+    { name: 'Purple', hex: '#8b5cf6' },
+  ];
 
   useEffect(() => {
-    fetchCategories();
-    fetchBrands();
+    fetchData();
   }, []);
 
   useEffect(() => {
     onFiltersChange({
+      gender: selectedGender,
       categories: selectedCategories,
       brands: selectedBrands,
-      gender: selectedGender,
-      rating: selectedRating,
-      priceRange
+      priceRange,
+      colors: selectedColors,
+      discount: selectedDiscount
     });
-  }, [selectedCategories, selectedBrands, selectedGender, selectedRating, priceRange]);
+  }, [selectedGender, selectedCategories, selectedBrands, priceRange, selectedColors, selectedDiscount]);
 
-  const fetchCategories = async () => {
+  const fetchData = async () => {
     try {
-      const response = await api.get('/api/categories/');
-      setCategories(response.data.categories || []);
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-    }
-  };
-
-  const fetchBrands = async () => {
-    try {
-      const response = await api.get('/api/products/');
-      const products = response.data.products || [];
+      const [categoriesRes, productsRes] = await Promise.all([
+        api.get('/api/categories/'),
+        api.get('/api/products/')
+      ]);
+      
+      setCategories(categoriesRes.data.categories || []);
+      
+      const products = productsRes.data.products || [];
       const uniqueBrands = Array.from(new Set(products.map((p: any) => p.brand).filter(Boolean))) as string[];
       setBrands(uniqueBrands);
     } catch (error) {
-      console.error('Error fetching brands:', error);
+      console.error('Error fetching filter data:', error);
     }
   };
 
@@ -75,130 +83,75 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ onFiltersChange, activeFi
     );
   };
 
-  const handleGenderChange = (gender: string) => {
-    setSelectedGender(prev => 
-      prev.includes(gender) 
-        ? prev.filter(g => g !== gender)
-        : [...prev, gender]
+  const handleColorChange = (color: string) => {
+    setSelectedColors(prev => 
+      prev.includes(color) 
+        ? prev.filter(c => c !== color)
+        : [...prev, color]
     );
   };
 
   const clearAllFilters = () => {
+    setSelectedGender('');
     setSelectedCategories([]);
     setSelectedBrands([]);
-    setSelectedGender([]);
-    setSelectedRating(null);
     setPriceRange([0, 1000]);
+    setSelectedColors([]);
+    setSelectedDiscount('');
   };
 
+  const hasActiveFilters = selectedGender || selectedCategories.length > 0 || selectedBrands.length > 0 || 
+    (priceRange[0] > 0 || priceRange[1] < 1000) || selectedColors.length > 0 || selectedDiscount;
+
   return (
-    <div className="w-64 bg-white dark:bg-gray-800 p-6 border-r border-gray-200 dark:border-gray-700">
-      <div className="flex justify-between items-center mb-6">
-        <Typography variant="h6" className="font-semibold">Filters</Typography>
-        <Button onClick={clearAllFilters} size="small" color="primary">
-          Clear All
-        </Button>
-      </div>
-
-      {/* Categories */}
-      <div className="mb-6">
-        <Typography variant="subtitle1" className="font-medium mb-3">Categories</Typography>
-        <FormGroup>
-          {categories.map((category) => (
-            <FormControlLabel
-              key={category.id}
-              control={
-                <Checkbox
-                  checked={selectedCategories.includes(category.id)}
-                  onChange={() => handleCategoryChange(category.id)}
-                  size="small"
-                />
-              }
-              label={category.name}
-              className="text-sm"
-            />
-          ))}
-        </FormGroup>
-      </div>
-
-      {/* Brands */}
-      <div className="mb-6">
-        <Typography variant="subtitle1" className="font-medium mb-3">Brands</Typography>
-        <FormGroup className="max-h-48 overflow-y-auto">
-          {brands.map((brand) => (
-            <FormControlLabel
-              key={brand}
-              control={
-                <Checkbox
-                  checked={selectedBrands.includes(brand)}
-                  onChange={() => handleBrandChange(brand)}
-                  size="small"
-                />
-              }
-              label={brand}
-              className="text-sm"
-            />
-          ))}
-        </FormGroup>
-      </div>
-
-      {/* Gender */}
-      <div className="mb-6">
-        <Typography variant="subtitle1" className="font-medium mb-3">Gender</Typography>
-        <FormGroup>
-          {genderOptions.map((gender) => (
-            <FormControlLabel
-              key={gender}
-              control={
-                <Checkbox
-                  checked={selectedGender.includes(gender)}
-                  onChange={() => handleGenderChange(gender)}
-                  size="small"
-                />
-              }
-              label={gender}
-              className="text-sm"
-            />
-          ))}
-        </FormGroup>
-      </div>
-
-      {/* Rating */}
-      <div className="mb-6">
-        <Typography variant="subtitle1" className="font-medium mb-3">Rating</Typography>
-        <FormGroup>
-          {ratingOptions.map((rating) => (
-            <FormControlLabel
-              key={rating}
-              control={
-                <Checkbox
-                  checked={selectedRating === rating}
-                  onChange={() => setSelectedRating(selectedRating === rating ? null : rating)}
-                  size="small"
-                />
-              }
-              label={`${rating}+ Stars`}
-              className="text-sm"
-            />
-          ))}
-        </FormGroup>
-      </div>
-
-      {/* Price Range */}
-      <div className="mb-6">
-        <Typography variant="subtitle1" className="font-medium mb-3">Price Range</Typography>
-        <Slider
-          value={priceRange}
-          onChange={(_, newValue) => setPriceRange(newValue as number[])}
-          valueLabelDisplay="auto"
-          min={0}
-          max={1000}
-          className="mt-4"
-        />
-        <div className="flex justify-between text-sm text-gray-600 mt-2">
-          <span>${priceRange[0]}</span>
-          <span>${priceRange[1]}</span>
+    <div className="w-56 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm h-[calc(100vh-50px)] flex flex-col">
+      <div className="p-3 border-b border-gray-100 dark:border-gray-700 flex-shrink-0">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-medium text-gray-900 dark:text-white">Filters</h3>
+          {hasActiveFilters && (
+            <button 
+              onClick={clearAllFilters}
+              className="text-xs text-pink-600 hover:text-pink-700 dark:text-pink-400 dark:hover:text-pink-300 transition-colors font-medium"
+            >
+              Clear
+            </button>
+          )}
         </div>
+      </div>
+
+      <div className="p-3 space-y-4 flex-1 overflow-y-auto">
+        <GenderFilter
+          selectedGender={selectedGender}
+          onGenderChange={setSelectedGender}
+        />
+
+        <CategoryFilter
+          categories={categories}
+          selectedCategories={selectedCategories}
+          onCategoryChange={handleCategoryChange}
+        />
+
+        <BrandFilter
+          brands={brands}
+          selectedBrands={selectedBrands}
+          onBrandChange={handleBrandChange}
+        />
+
+        <PriceFilter
+          priceRange={priceRange}
+          onPriceChange={setPriceRange}
+        />
+
+        <ColorFilter
+          colors={colors}
+          selectedColors={selectedColors}
+          onColorChange={handleColorChange}
+        />
+
+        <DiscountFilter
+          selectedDiscount={selectedDiscount}
+          onDiscountChange={setSelectedDiscount}
+        />
       </div>
     </div>
   );
