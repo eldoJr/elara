@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Paper, TextField, Button, Typography, Alert } from '@mui/material';
-import axios from 'axios';
+import api from '../../config/api';
 
 interface ProfileData {
   username: string;
@@ -31,7 +31,7 @@ const Profile: React.FC = () => {
 
   const fetchProfile = async () => {
     try {
-      const response = await axios.get('/api/profile/');
+      const response = await api.get('/api/profile/');
       setProfile(response.data.profile);
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -51,7 +51,7 @@ const Profile: React.FC = () => {
     setMessage('');
 
     try {
-      await axios.post('/api/profile/update/', profile);
+      await api.post('/api/profile/update/', profile);
       setMessage('Profile updated successfully!');
     } catch (error) {
       setMessage('Error updating profile');

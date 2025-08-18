@@ -426,9 +426,19 @@ def create_order(request):
         return JsonResponse({"error": "Cart not found"}, status=404)
 
 
-@login_required
 def get_profile(request):
     """Get user profile"""
+    if not request.user.is_authenticated:
+        return JsonResponse({"profile": {
+            'username': 'guest',
+            'email': '',
+            'first_name': '',
+            'last_name': '',
+            'phone': '',
+            'address': '',
+            'date_of_birth': None,
+        }})
+    
     try:
         profile = UserProfile.objects.get(user=request.user)
         profile_data = {
@@ -446,7 +456,6 @@ def get_profile(request):
 
 
 @csrf_exempt
-@login_required
 def update_profile(request):
     """Update user profile"""
     if request.method != 'POST':
