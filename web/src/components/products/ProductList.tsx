@@ -46,7 +46,7 @@ const ProductList: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [comparisonProducts, setComparisonProducts] = useLocalStorage<Product[]>('comparisonProducts', []);
   const [isComparisonOpen, setIsComparisonOpen] = useState(false);
-  const [activeFilters, setActiveFilters] = useLocalStorage('productFilters', {
+  const [activeFilters, setActiveFilters] = useState({
     categories: [] as { id: number; name: string }[],
     brands: [] as string[],
     gender: '' as string,
@@ -65,20 +65,7 @@ const ProductList: React.FC = () => {
     handleSortChange(sortBy);
   }, [sortBy]);
   
-  useEffect(() => {
-    if (products.length > 0) {
-      const filters = {
-        categories: activeFilters.categories.map(c => c.name),
-        brands: activeFilters.brands,
-        gender: activeFilters.gender,
-        colors: activeFilters.colors,
-        discount: activeFilters.discount,
-        rating: activeFilters.rating,
-        priceRange: activeFilters.priceRange
-      };
-      handleFiltersChange(filters);
-    }
-  }, [searchQuery]);
+
 
   const fetchProducts = async () => {
     try {
@@ -93,6 +80,7 @@ const ProductList: React.FC = () => {
       setFilteredProducts(sortedData);
     } catch (error) {
       console.error('Error fetching products:', error);
+      setFilteredProducts([]);
     } finally {
       setLoading(false);
     }

@@ -119,7 +119,7 @@ const FilterChips: React.FC<FilterChipsProps> = ({
         )}
 
         {/* Rating Chip */}
-        {activeFilters.rating !== null && (
+        {activeFilters.rating !== null && activeFilters.rating !== undefined && (
           <ChipComponent
             label={`${activeFilters.rating}+ Stars`}
             onRemove={() => onRemoveFilter('rating', null)}

@@ -51,14 +51,20 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ onFiltersChange }) => {
   }, []);
 
   useEffect(() => {
-    onFiltersChange({
-      gender: selectedGender,
-      categories: selectedCategories,
-      brands: selectedBrands,
-      priceRange,
-      colors: selectedColors,
-      discount: selectedDiscount
-    });
+    // Only call onFiltersChange if there are actual filter changes, not on initial mount
+    const hasFilters = selectedGender || selectedCategories.length > 0 || selectedBrands.length > 0 || 
+      (priceRange[0] > 0 || priceRange[1] < 1000) || selectedColors.length > 0 || selectedDiscount;
+    
+    if (hasFilters) {
+      onFiltersChange({
+        gender: selectedGender,
+        categories: selectedCategories,
+        brands: selectedBrands,
+        priceRange,
+        colors: selectedColors,
+        discount: selectedDiscount
+      });
+    }
   }, [selectedGender, selectedCategories, selectedBrands, priceRange, selectedColors, selectedDiscount]);
 
   const fetchData = async () => {
