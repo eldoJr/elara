@@ -36,7 +36,7 @@ const Navbar: React.FC = () => {
               {categories.map((category) => (
                 <Link
                   key={category}
-                  to={`/products?category=${category.toLowerCase()}`}
+                  to={`/products?search=${category}`}
                   className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 text-sm font-medium transition-colors"
                 >
                   {category}
@@ -85,7 +85,7 @@ const Navbar: React.FC = () => {
             {categories.map((category) => (
               <Link
                 key={category}
-                to={`/products?category=${category.toLowerCase()}`}
+                to={`/products?search=${category}`}
                 className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white block px-3 py-2 text-base font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >

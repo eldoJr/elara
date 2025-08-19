@@ -64,20 +64,36 @@ const ProductList: React.FC = () => {
   useEffect(() => {
     handleSortChange(sortBy);
   }, [sortBy]);
+
+  useEffect(() => {
+    if (searchQuery && products.length > 0) {
+      const filtered = products.filter(product => 
+        product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.category.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredProducts(filtered);
+    } else if (!searchQuery && products.length > 0) {
+      setFilteredProducts(products);
+    }
+  }, [searchQuery, products]);
   
 
 
   const fetchProducts = async () => {
     try {
-      const urlParams = new URLSearchParams(window.location.search);
-      const category = urlParams.get('category');
-      const url = category ? `/api/products/?search=${category}` : '/api/products/';
-      const response = await api.get(url);
+      const response = await api.get('/api/products/');
       const productData = response.data.products || [];
-      // Sort by ID descending (newest first) by default
       const sortedData = productData.sort((a: Product, b: Product) => b.id - a.id);
       setProducts(sortedData);
       setFilteredProducts(sortedData);
+      
+      const urlParams = new URLSearchParams(window.location.search);
+      const searchParam = urlParams.get('search');
+      if (searchParam) {
+        setSearchQuery(searchParam);
+      }
     } catch (error) {
       console.error('Error fetching products:', error);
       setFilteredProducts([]);
