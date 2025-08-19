@@ -26,9 +26,6 @@ const Navbar: React.FC = () => {
               <div className="w-8 h-8 ">
                 <img src={logo} alt="Elara Logo" className="w-6 h-6" />
               </div>
-              <span className="text-xl font-light text-gray-900 dark:text-white tracking-tight">
-                Elara
-              </span>
             </Link>
           </div>
 
