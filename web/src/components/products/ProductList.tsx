@@ -37,7 +37,7 @@ const ProductList: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sortBy, setSortBy] = useState('recommended');
+  const [sortBy, setSortBy] = useState('newest');
   const [view, setView] = useState<'grid' | 'list'>('grid');
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
@@ -87,8 +87,10 @@ const ProductList: React.FC = () => {
       const url = category ? `/api/products/?search=${category}` : '/api/products/';
       const response = await api.get(url);
       const productData = response.data.products || [];
-      setProducts(productData);
-      setFilteredProducts(productData);
+      // Sort by ID descending (newest first) by default
+      const sortedData = productData.sort((a: Product, b: Product) => b.id - a.id);
+      setProducts(sortedData);
+      setFilteredProducts(sortedData);
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
