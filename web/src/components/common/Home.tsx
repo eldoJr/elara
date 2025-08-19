@@ -7,6 +7,7 @@ interface Product {
   title: string;
   thumbnail: string;
   category: string;
+  price: number;
 }
 
 const Home: React.FC = () => {
@@ -20,7 +21,6 @@ const Home: React.FC = () => {
     try {
       const response = await api.get('/api/products/');
       const products = response.data.products || [];
-      // Get 6 random products
       const shuffled = products.sort(() => 0.5 - Math.random());
       setFeaturedProducts(shuffled.slice(0, 6));
     } catch (error) {
@@ -31,37 +31,40 @@ const Home: React.FC = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-black">
       {/* Product Showcase Slide */}
-      <div className="py-16 bg-gray-50 dark:bg-gray-950">
+      <div className="py-20 bg-gradient-to-br from-orange-50/30 via-pink-50/30 to-blue-50/30 dark:from-orange-950/20 dark:via-pink-950/20 dark:to-blue-950/20">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Left: Bold Text */}
-            <div>
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div className="space-y-6">
+              <h1 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white leading-[1.1] tracking-tight">
                 <span className="bg-gradient-to-r from-orange-500 via-pink-500 to-blue-600 bg-clip-text text-transparent">
                   Elara Store.
                 </span>
                 <br />
-                The best way to buy the products you love.
+                <span className="text-gray-900 dark:text-white font-light">
+                  The best way to buy the products you love.
+                </span>
               </h1>
+              <p className="text-xl text-gray-600 dark:text-gray-400 font-light max-w-lg">
+                Discover curated products with AI-powered recommendations tailored just for you.
+              </p>
             </div>
             
-            {/* Right: Product Icons Row */}
-            <div className="flex justify-center">
-              <div className="grid grid-cols-3 gap-8">
+            <div className="flex justify-center lg:justify-end">
+              <div className="grid grid-cols-3 gap-6">
                 {featuredProducts.map((product) => (
                   <Link
                     key={product.id}
                     to={`/products/${product.id}`}
-                    className="group text-center hover:scale-105 transition-transform duration-200"
+                    className="group text-center transition-all duration-300 hover:-translate-y-2"
                   >
-                    <div className="w-20 h-20 mx-auto mb-3 rounded-2xl overflow-hidden bg-white shadow-sm border border-gray-200 dark:border-gray-700 group-hover:shadow-md transition-shadow">
+                    <div className="w-24 h-24 mx-auto mb-3 rounded-3xl overflow-hidden bg-white dark:bg-gray-900 shadow-lg border border-gray-100 dark:border-gray-800 group-hover:shadow-xl transition-all duration-300">
                       <img
                         src={product.thumbnail}
                         alt={product.title}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                       />
                     </div>
-                    <p className="text-xs font-medium text-gray-700 dark:text-gray-300 truncate max-w-20">
+                    <p className="text-xs font-medium text-gray-700 dark:text-gray-300 truncate max-w-24">
                       {product.title.split(' ').slice(0, 2).join(' ')}
                     </p>
                   </Link>
@@ -73,125 +76,155 @@ const Home: React.FC = () => {
       </div>
 
       {/* Hero Section */}
-      <div className="relative">
-        <div className="max-w-6xl mx-auto px-6 pt-20 pb-16">
-          <div className="text-center">
-            <div className="mb-6">
-              <span className="inline-block px-3 py-1 text-xs font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-900 rounded-full">
-                AI-Powered Shopping
+      <div className="py-24 bg-white dark:bg-black">
+        <div className="max-w-5xl mx-auto px-6 text-center">
+          <div className="mb-8">
+            <span className="inline-flex items-center px-4 py-2 text-sm font-medium bg-gradient-to-r from-orange-100 via-pink-100 to-blue-100 dark:from-orange-900/30 dark:via-pink-900/30 dark:to-blue-900/30 text-gray-700 dark:text-gray-300 rounded-full border border-gray-200 dark:border-gray-700">
+              ✨ AI-Powered Shopping Experience
+            </span>
+          </div>
+          <h2 className="text-5xl md:text-7xl font-light mb-6 tracking-tight">
+            <span className="text-gray-900 dark:text-white">
+              Shop 
+            </span>
+            <span className="font-medium bg-gradient-to-r from-orange-500 via-pink-500 to-blue-600 bg-clip-text text-transparent">
+              Smarter
+            </span>
+          </h2>
+          <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-400 mb-12 max-w-3xl mx-auto font-light leading-relaxed">
+            Experience the future of e-commerce with personalized recommendations and intelligent product discovery.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              to="/products"
+              className="group bg-gradient-to-r from-orange-500 via-pink-500 to-blue-600 hover:from-orange-600 hover:via-pink-600 hover:to-blue-700 text-white px-8 py-4 rounded-2xl font-medium text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+            >
+              <span className="flex items-center justify-center gap-2">
+                Explore Products
+                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
               </span>
-            </div>
-            <h1 className="text-4xl md:text-6xl font-light mb-4 tracking-tight">
-              <span className="text-gray-900 dark:text-white">
-                Welcome to 
-              </span>
-              <span className="font-medium bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Elara
-              </span>
-            </h1>
-            <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto font-light leading-relaxed">
-              Discover products with intelligent recommendations.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link
-                to="/products"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-              >
-                Shop Now
-              </Link>
-              <Link
-                to="/register"
-                className="text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-900 px-6 py-3 rounded-lg font-medium transition-colors"
-              >
-                Learn More
-              </Link>
-            </div>
+            </Link>
+            <Link
+              to="/register"
+              className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white px-8 py-4 rounded-2xl font-medium text-lg border-2 border-gray-200 dark:border-gray-700 hover:border-pink-300 dark:hover:border-pink-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+            >
+              Join Free
+            </Link>
           </div>
         </div>
       </div>
 
       {/* Features Section */}
-      <div className="py-16 bg-white dark:bg-black">
+      <div className="py-20 bg-gray-50 dark:bg-gray-950">
         <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-light mb-3 text-gray-900 dark:text-white tracking-tight">
-              Why Elara?
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-light mb-4 text-gray-900 dark:text-white tracking-tight">
+              Built for 
+              <span className="bg-gradient-to-r from-orange-500 via-pink-500 to-blue-600 bg-clip-text text-transparent font-medium">
+                Everyone
+              </span>
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 max-w-xl mx-auto font-light">
-              Three reasons to choose our platform
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto font-light">
+              Three pillars that make Elara the perfect shopping destination
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Feature 1 */}
-            <div className="text-center p-6">
-              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="group text-center p-8 bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+              <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-orange-200 dark:from-orange-900/30 dark:to-orange-800/30 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                <svg className="w-8 h-8 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                 </svg>
               </div>
-              <h3 className="text-lg font-medium mb-2 text-gray-900 dark:text-white">
-                Curated Selection
+              <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">
+                Curated Collection
               </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 font-light leading-relaxed">
-                Thousands of products across categories with intelligent recommendations.
+              <p className="text-gray-600 dark:text-gray-400 font-light leading-relaxed">
+                Hand-picked products across all categories with quality guaranteed and intelligent recommendations.
               </p>
             </div>
 
-            {/* Feature 2 */}
-            <div className="text-center p-6">
-              <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="group text-center p-8 bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+              <div className="w-16 h-16 bg-gradient-to-br from-pink-100 to-pink-200 dark:from-pink-900/30 dark:to-pink-800/30 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                <svg className="w-8 h-8 text-pink-600 dark:text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-medium mb-2 text-gray-900 dark:text-white">
-                Secure & Private
+              <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">
+                Secure & Trusted
               </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 font-light leading-relaxed">
-                Advanced encryption and privacy protection for all transactions.
+              <p className="text-gray-600 dark:text-gray-400 font-light leading-relaxed">
+                Bank-level security with end-to-end encryption protecting your data and transactions at all times.
               </p>
             </div>
 
-            {/* Feature 3 */}
-            <div className="text-center p-6">
-              <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            <div className="group text-center p-8 bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-800/30 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                <svg className="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-medium mb-2 text-gray-900 dark:text-white">
+              <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">
                 AI-Powered
               </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 font-light leading-relaxed">
-                Personalized shopping experience with intelligent assistance.
+              <p className="text-gray-600 dark:text-gray-400 font-light leading-relaxed">
+                Smart recommendations and personalized shopping experience powered by advanced machine learning.
               </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats Section */}
+      <div className="py-16 bg-gradient-to-r from-orange-500 via-pink-500 to-blue-600">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
+            <div className="space-y-2">
+              <div className="text-3xl md:text-4xl font-light">50K+</div>
+              <div className="text-orange-100 font-light text-sm">Products</div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-3xl md:text-4xl font-light">10K+</div>
+              <div className="text-pink-100 font-light text-sm">Happy Customers</div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-3xl md:text-4xl font-light">99.9%</div>
+              <div className="text-blue-100 font-light text-sm">Uptime</div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-3xl md:text-4xl font-light">24/7</div>
+              <div className="text-white/80 font-light text-sm">Support</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* CTA Section */}
-      <div className="py-16 bg-white dark:bg-black border-t border-gray-200 dark:border-gray-800">
+      <div className="py-24 bg-white dark:bg-black">
         <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="text-3xl md:text-4xl font-light mb-3 text-gray-900 dark:text-white tracking-tight">
-            Ready to get started?
+          <h2 className="text-4xl md:text-5xl font-light mb-6 text-gray-900 dark:text-white tracking-tight">
+            Start your 
+            <span className="bg-gradient-to-r from-orange-500 via-pink-500 to-blue-600 bg-clip-text text-transparent font-medium">
+              journey
+            </span>
           </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-8 font-light">
-            Join thousands of customers discovering products with AI.
+          <p className="text-xl text-gray-600 dark:text-gray-400 mb-12 font-light max-w-2xl mx-auto">
+            Join thousands of customers discovering amazing products with personalized AI recommendations.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/register"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+              className="bg-gradient-to-r from-orange-500 via-pink-500 to-blue-600 hover:from-orange-600 hover:via-pink-600 hover:to-blue-700 text-white px-8 py-4 rounded-2xl font-medium text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             >
-              Get Started
+              Get Started Free
             </Link>
             <Link
               to="/products"
-              className="text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-900 px-6 py-3 rounded-lg font-medium transition-colors"
+              className="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white px-8 py-4 rounded-2xl font-medium text-lg hover:bg-gray-200 dark:hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             >
-              Browse Products
+              Explore Products
             </Link>
           </div>
         </div>
