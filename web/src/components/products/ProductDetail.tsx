@@ -28,20 +28,29 @@ const ProductDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
+  const [currentId, setCurrentId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (id) {
+    if (id && id !== currentId) {
+      setCurrentId(id);
+      setLoading(true);
+      setProduct(null);
+      setSelectedImage('');
+      setQuantity(1);
       fetchProduct(parseInt(id));
     }
-  }, [id]);
+  }, [id, currentId]);
 
   const fetchProduct = async (productId: number) => {
     try {
+      console.log('Fetching product with ID:', productId);
       const response = await api.get(`/api/products/${productId}/`);
+      console.log('Product data received:', response.data);
       setProduct(response.data);
       setSelectedImage(response.data.thumbnail);
     } catch (error) {
       console.error('Error fetching product:', error);
+      setProduct(null);
     } finally {
       setLoading(false);
     }

@@ -33,7 +33,7 @@ const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({
     } else {
       setFilteredSuggestions([]);
     }
-  }, [query, suggestions]);
+  }, [query]);
 
   const handleSearch = (searchQuery: string) => {
     if (searchQuery.trim()) {
