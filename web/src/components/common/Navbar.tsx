@@ -23,8 +23,8 @@ const Navbar: React.FC = () => {
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link to="/" className="flex items-center space-x-2 group">
-              <div className="w-8 h-8 bg-gradient-to-r from-orange-500 via-pink-500 to-blue-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                <span className="text-white font-bold text-sm">E</span>
+              <div className="w-8 h-8 ">
+                <img src={logo} alt="Elara Logo" className="w-6 h-6" />
               </div>
               <span className="text-xl font-light text-gray-900 dark:text-white tracking-tight">
                 Elara

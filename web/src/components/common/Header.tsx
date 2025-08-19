@@ -25,18 +25,18 @@ const Header: React.FC = () => {
             {/* Left Side - Welcome Message */}
             <div className="flex items-center space-x-4">
               <div className="hidden sm:block">
-                <p className="text-sm font-light text-gray-700 dark:text-gray-200">
+                <p className="text-sm text-gray-600 dark:text-gray-300">
                   {isLoggedIn ? (
                     <span>
                       Welcome back, 
-                      <span className="font-medium bg-gradient-to-r from-orange-500 via-pink-500 to-blue-600 bg-clip-text text-transparent">
+                      <span className="font-semibold bg-gradient-to-r from-orange-500 via-pink-500 to-blue-600 bg-clip-text text-transparent ml-1">
                         {username}
                       </span>
                     </span>
                   ) : (
                     <span>
                       Discover amazing products with 
-                      <span className="font-medium bg-gradient-to-r from-orange-500 via-pink-500 to-blue-600 bg-clip-text text-transparent">
+                      <span className="font-semibold bg-gradient-to-r from-orange-500 via-pink-500 to-blue-600 bg-clip-text text-transparent ml-1">
                         AI recommendations
                       </span>
                     </span>
@@ -46,13 +46,10 @@ const Header: React.FC = () => {
             </div>
             
             {/* Right Side - Actions */}
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1">
               <button
-                onClick={() => {
-                  console.log('Theme toggle clicked, current theme:', theme);
-                  toggleTheme();
-                }}
-                className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-lg hover:bg-white/50 dark:hover:bg-gray-800/50 transition-all duration-200 border border-transparent hover:border-gray-300 dark:hover:border-gray-600"
+                onClick={toggleTheme}
+                className="p-2.5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
                 title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
               >
                 {theme === 'light' ? (
@@ -64,44 +61,44 @@ const Header: React.FC = () => {
               
               <Link 
                 to="/products" 
-                className="hidden sm:block text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-800/50 transition-all duration-200"
+                className="hidden sm:block text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
               >
                 Browse
               </Link>
               
               <button 
-                className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-800/50 transition-all duration-200"
+                className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
                 onClick={toggleSearch}
               >
                 Search
               </button>
               
               {isLoggedIn ? (
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-1">
                   <Link 
                     to="/profile" 
-                    className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-800/50 transition-all duration-200"
+                    className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
                   >
                     Profile
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-800/50 transition-all duration-200"
+                    className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
                   >
                     Sign Out
                   </button>
                 </div>
               ) : (
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-1">
                   <Link
                     to="/register"
-                    className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-800/50 transition-all duration-200"
+                    className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
                   >
                     Sign Up
                   </Link>
                   <Link
                     to="/login"
-                    className="bg-gradient-to-r from-orange-500 via-pink-500 to-blue-600 hover:from-orange-600 hover:via-pink-600 hover:to-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md"
+                    className="bg-gradient-to-r from-orange-500 via-pink-500 to-blue-600 hover:from-orange-600 hover:via-pink-600 hover:to-blue-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md"
                   >
                     Sign In
                   </Link>
