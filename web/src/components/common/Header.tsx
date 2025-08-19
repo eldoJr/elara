@@ -48,11 +48,18 @@ const Header: React.FC = () => {
             {/* Right Side - Actions */}
             <div className="flex items-center space-x-2">
               <button
-                onClick={toggleTheme}
-                className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-lg hover:bg-white/50 dark:hover:bg-gray-800/50 transition-all duration-200"
+                onClick={() => {
+                  console.log('Theme toggle clicked, current theme:', theme);
+                  toggleTheme();
+                }}
+                className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-lg hover:bg-white/50 dark:hover:bg-gray-800/50 transition-all duration-200 border border-transparent hover:border-gray-300 dark:hover:border-gray-600"
                 title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
               >
-                {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+                {theme === 'light' ? (
+                  <Moon className="w-4 h-4" />
+                ) : (
+                  <Sun className="w-4 h-4" />
+                )}
               </button>
               
               <Link 
