@@ -25,7 +25,7 @@ const Header: React.FC = () => {
             {/* Left Side - Welcome Message */}
             <div className="flex items-center space-x-4">
               <div className="hidden sm:block">
-                <p className="text-sm font-light text-gray-700 dark:text-gray-300">
+                <p className="text-sm font-light text-gray-700 dark:text-gray-200">
                   {isLoggedIn ? (
                     <span>
                       Welcome back, 
@@ -64,13 +64,13 @@ const Header: React.FC = () => {
               
               <Link 
                 to="/products" 
-                className="hidden sm:block text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-800/50 transition-all duration-200"
+                className="hidden sm:block text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-800/50 transition-all duration-200"
               >
                 Browse
               </Link>
               
               <button 
-                className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-800/50 transition-all duration-200"
+                className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-800/50 transition-all duration-200"
                 onClick={toggleSearch}
               >
                 Search
@@ -80,13 +80,13 @@ const Header: React.FC = () => {
                 <div className="flex items-center space-x-2">
                   <Link 
                     to="/profile" 
-                    className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-800/50 transition-all duration-200"
+                    className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-800/50 transition-all duration-200"
                   >
                     Profile
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-800/50 transition-all duration-200"
+                    className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-800/50 transition-all duration-200"
                   >
                     Sign Out
                   </button>
@@ -95,7 +95,7 @@ const Header: React.FC = () => {
                 <div className="flex items-center space-x-2">
                   <Link
                     to="/register"
-                    className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-800/50 transition-all duration-200"
+                    className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-800/50 transition-all duration-200"
                   >
                     Sign Up
                   </Link>
