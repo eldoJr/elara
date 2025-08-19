@@ -104,7 +104,7 @@ const ProductDetail: React.FC = () => {
             <img
               src={selectedImage}
               alt={product.title}
-              className="w-full h-96 object-cover rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg"
+              className="w-full h-[500px] object-cover rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg"
             />
             {product.images && product.images.length > 0 && (
               <div className="flex gap-2 overflow-x-auto pb-2">
