@@ -65,7 +65,7 @@ const Home: React.FC = () => {
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                       />
                     </div>
-                    <p className="text-xs font-medium text-gray-700 dark:text-gray-300 truncate max-w-24">
+                    <p className="text-xs font-medium text-gray-700 dark:text-gray-200 truncate max-w-24">
                       {product.title.split(' ').slice(0, 2).join(' ')}
                     </p>
                   </Link>
@@ -80,7 +80,7 @@ const Home: React.FC = () => {
       <div className="py-24 bg-white dark:bg-black">
         <div className="max-w-5xl mx-auto px-6 text-center">
           <div className="mb-8">
-            <span className="inline-flex items-center px-4 py-2 text-sm font-medium bg-gradient-to-r from-orange-100 via-pink-100 to-blue-100 dark:from-orange-900/30 dark:via-pink-900/30 dark:to-blue-900/30 text-gray-700 dark:text-gray-300 rounded-full border border-gray-200 dark:border-gray-700">
+            <span className="inline-flex items-center px-4 py-2 text-sm font-medium bg-gradient-to-r from-orange-100 via-pink-100 to-blue-100 dark:from-orange-900/30 dark:via-pink-900/30 dark:to-blue-900/30 text-gray-700 dark:text-gray-100 rounded-full border border-gray-200 dark:border-gray-700">
               ✨ AI-Powered Shopping Experience
             </span>
           </div>
