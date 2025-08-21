@@ -4,6 +4,7 @@ import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/st
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { SearchProvider, useSearch } from './components/common/SearchProvider';
+import { CartProvider } from './contexts/CartContext';
 import Navbar from './components/common/Navbar';
 import Header from './components/common/Header';
 import Footer from './components/common/Footer';
@@ -52,19 +53,21 @@ const theme = createTheme({
 function App() {
   return (
     <ThemeProvider>
-      <SearchProvider>
-        <MuiThemeProvider theme={theme}>
-          <CssBaseline />
-          <Router>
-          <div className="App">
-            <Navbar />
-            <Header />
-            <MainContent />
-            <Footer />
-          </div>
-          </Router>
-        </MuiThemeProvider>
-      </SearchProvider>
+      <CartProvider>
+        <SearchProvider>
+          <MuiThemeProvider theme={theme}>
+            <CssBaseline />
+            <Router>
+            <div className="App">
+              <Navbar />
+              <Header />
+              <MainContent />
+              <Footer />
+            </div>
+            </Router>
+          </MuiThemeProvider>
+        </SearchProvider>
+      </CartProvider>
     </ThemeProvider>
   );
 }

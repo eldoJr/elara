@@ -14,6 +14,7 @@ import Pagination from './Pagination';
 import SearchAutocomplete from './SearchAutocomplete';
 import ProductComparison from './ProductComparison';
 import useLocalStorage from '../../hooks/useLocalStorage';
+import { useCart } from '../../contexts/CartContext';
 
 interface Product {
   id: number;
@@ -41,6 +42,7 @@ const ProductList: React.FC = () => {
   const [view, setView] = useState<'grid' | 'list'>('grid');
   const [isMobile, setIsMobile] = useState(false);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+  const { updateCartCount } = useCart();
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(12);
@@ -276,10 +278,11 @@ const ProductList: React.FC = () => {
 
   const addToCart = async (productId: number) => {
     try {
-      await api.post('/api/cart/add', {
+      await api.post('/api/cart/add/', {
         product_id: productId,
         quantity: 1
       });
+      updateCartCount();
       alert('Product added to cart!');
     } catch (error) {
       console.error('Error adding to cart:', error);

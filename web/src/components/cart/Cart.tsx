@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingBag, Trash2, Plus, Minus, ArrowRight, ShoppingCart } from 'lucide-react';
-import axios from 'axios';
+import api from '../../config/api';
 import Loading from '../common/Loading';
 import Breadcrumb from '../common/Breadcrumb';
+import { useCart } from '../../contexts/CartContext';
 
 interface CartItem {
   id: number;
@@ -21,6 +22,7 @@ const Cart: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<number | null>(null);
   const navigate = useNavigate();
+  const { updateCartCount } = useCart();
 
   useEffect(() => {
     fetchCart();
@@ -28,9 +30,10 @@ const Cart: React.FC = () => {
 
   const fetchCart = async () => {
     try {
-      const response = await axios.get('/api/cart/');
+      const response = await api.get('/api/cart/');
       setCartItems(response.data.cart_items);
       setTotal(response.data.total);
+      updateCartCount();
     } catch (error) {
       console.error('Error fetching cart:', error);
     } finally {
@@ -43,7 +46,7 @@ const Cart: React.FC = () => {
     
     setUpdating(itemId);
     try {
-      await axios.post('/api/cart/update/', {
+      await api.post('/api/cart/update/', {
         item_id: itemId,
         quantity: newQuantity
       });
@@ -58,7 +61,7 @@ const Cart: React.FC = () => {
   const removeItem = async (itemId: number) => {
     setUpdating(itemId);
     try {
-      await axios.post('/api/cart/remove/', {
+      await api.post('/api/cart/remove/', {
         item_id: itemId
       });
       fetchCart();
@@ -71,7 +74,8 @@ const Cart: React.FC = () => {
 
   const checkout = async () => {
     try {
-      const response = await axios.post('/api/orders/create/');
+      const response = await api.post('/api/orders/create/');
+      updateCartCount();
       alert('Order placed successfully!');
       navigate('/orders');
     } catch (error) {

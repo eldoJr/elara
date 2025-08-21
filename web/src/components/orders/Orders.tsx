@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Typography, Paper, Chip } from '@mui/material';
-import axios from 'axios';
+import api from '../../config/api';
 import Loading from '../common/Loading';
 import Breadcrumb from '../common/Breadcrumb';
 
@@ -28,7 +28,7 @@ const Orders: React.FC = () => {
 
   const fetchOrders = async () => {
     try {
-      const response = await axios.get('/api/orders/');
+      const response = await api.get('/api/orders/');
       setOrders(response.data.orders);
     } catch (error) {
       console.error('Error fetching orders:', error);

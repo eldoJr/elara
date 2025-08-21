@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, ShoppingBag, Menu, X } from 'lucide-react';
 import { useSearch } from './SearchProvider';
+import { useCart } from '../../contexts/CartContext';
 import logo from '../../assets/logo.svg';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { toggleSearch } = useSearch();
+  const { cartCount } = useCart();
 
   const categories = [
     { name: 'Electronics', color: 'from-blue-500 to-blue-600' },
@@ -66,9 +68,14 @@ const Navbar: React.FC = () => {
             
             <Link 
               to="/cart" 
-              className="p-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className="relative p-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
               <ShoppingBag className="w-5 h-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-orange-500 to-pink-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center min-w-[20px] text-[10px]">
+                  {cartCount > 99 ? '99+' : cartCount}
+                </span>
+              )}
             </Link>
             
             {/* Mobile menu button */}

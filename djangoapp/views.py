@@ -276,7 +276,7 @@ def get_cart(request):
                 'price': str(item.product.price),
                 'quantity': item.quantity,
                 'total': str(item_total),
-                'image': item.product.image.url if item.product.image else None,
+                'image': item.product.image_url if hasattr(item.product, 'image_url') and item.product.image_url else (item.product.image.url if hasattr(item.product, 'image') and item.product.image else None),
             })
         
         return JsonResponse({
