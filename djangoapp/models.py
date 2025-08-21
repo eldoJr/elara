@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.timezone import now
+from django.utils import timezone
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import Index
 
@@ -172,3 +173,69 @@ class UserProfile(models.Model):
     
     def __str__(self):
         return f"Profile for {self.user.username}"
+
+
+class UserBehavior(models.Model):
+    ACTION_CHOICES = [
+        ('VIEW', 'Product View'),
+        ('SEARCH', 'Search Query'),
+        ('ADD_CART', 'Add to Cart'),
+        ('REMOVE_CART', 'Remove from Cart'),
+        ('PURCHASE', 'Purchase'),
+        ('WISHLIST', 'Add to Wishlist'),
+        ('REVIEW', 'Write Review'),
+        ('AI_CHAT', 'AI Assistant Chat'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, db_index=True)
+    action = models.CharField(max_length=20, choices=ACTION_CHOICES, db_index=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True)
+    metadata = models.JSONField(default=dict, blank=True)  # Store search queries, chat context, etc.
+    timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
+    session_id = models.CharField(max_length=100, blank=True, db_index=True)
+    
+    class Meta:
+        indexes = [
+            Index(fields=['user', 'action', 'timestamp']),
+            Index(fields=['product', 'action']),
+            Index(fields=['session_id']),
+        ]
+    
+    def __str__(self):
+        return f"{self.user.username} - {self.action} at {self.timestamp}"
+
+
+class ConversationHistory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, db_index=True)
+    session_id = models.CharField(max_length=100, db_index=True)
+    message = models.TextField()
+    response = models.TextField()
+    context = models.JSONField(default=dict, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
+    
+    class Meta:
+        indexes = [
+            Index(fields=['user', 'session_id', 'timestamp']),
+        ]
+    
+    def __str__(self):
+        return f"Chat {self.session_id} - {self.user.username}"
+
+
+class ProductRecommendation(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, db_index=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    score = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(1)])
+    algorithm = models.CharField(max_length=50)  # 'collaborative', 'content_based', 'ai_generated'
+    context = models.JSONField(default=dict, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    
+    class Meta:
+        unique_together = ('user', 'product', 'algorithm')
+        indexes = [
+            Index(fields=['user', 'score']),
+            Index(fields=['created_at']),
+        ]
+    
+    def __str__(self):
+        return f"Recommendation: {self.product.name} for {self.user.username} ({self.score})"

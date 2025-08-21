@@ -9,8 +9,10 @@ import json
 import logging
 from decimal import Decimal
 
-from .models import Category, Product, Cart, CartItem, Order, OrderItem, UserProfile
+from .models import Category, Product, Cart, CartItem, Order, OrderItem, UserProfile, UserBehavior, ConversationHistory
 from .services.database_service import db_service
+from .services.search_service import search_service
+from .services.recommendation_service import recommendation_service
 
 logger = logging.getLogger(__name__)
 
@@ -178,6 +180,19 @@ def get_product_detail(request, product_id):
         product = db_service.get_product(int(product_id))
         
         if product:
+            # Track product view behavior
+            if request.user.is_authenticated:
+                try:
+                    product_obj = Product.objects.get(id=product_id)
+                    UserBehavior.objects.create(
+                        user=request.user,
+                        action='VIEW',
+                        product=product_obj,
+                        metadata={'source': 'external_api'}
+                    )
+                except Product.DoesNotExist:
+                    pass
+            
             product_data = {
                 'id': product['id'],
                 'title': product['name'],
@@ -200,6 +215,16 @@ def get_product_detail(request, product_id):
     # Fallback to local database
     try:
         product = Product.objects.get(id=product_id, is_active=True)
+        
+        # Track product view behavior
+        if request.user.is_authenticated:
+            UserBehavior.objects.create(
+                user=request.user,
+                action='VIEW',
+                product=product,
+                metadata={'source': 'local_db'}
+            )
+        
         product_data = {
             'id': product.id,
             'title': product.name,
@@ -489,21 +514,151 @@ def update_profile(request):
 
 @csrf_exempt
 def ai_chat(request):
-    """AI Assistant chat endpoint"""
+    """Enhanced AI Assistant chat endpoint with DeepSeek integration"""
     if request.method != 'POST':
         return JsonResponse({"error": "POST method required"}, status=405)
     
-    data = json.loads(request.body)
-    message = data.get('message', '')
+    try:
+        from .services.ai_service import ai_service
+        
+        data = json.loads(request.body)
+        message = data.get('message', '')
+        session_id = data.get('session_id', '')
+        
+        # Get recent products for context
+        products = Product.objects.filter(is_active=True)[:20]
+        products_data = [{
+            'id': p.id,
+            'name': p.name,
+            'price': float(p.price),
+            'category': p.category.name,
+            'brand': p.brand or '',
+            'rating': float(p.rating or 0)
+        } for p in products]
+        
+        # Get user context if authenticated
+        user_context = {}
+        if request.user.is_authenticated:
+            # Get recent user behaviors
+            recent_behaviors = UserBehavior.objects.filter(
+                user=request.user
+            ).order_by('-timestamp')[:10]
+            
+            user_context = {
+                'username': request.user.username,
+                'recent_actions': [{
+                    'action': b.action,
+                    'product': b.product.name if b.product else None,
+                    'metadata': b.metadata
+                } for b in recent_behaviors]
+            }
+            
+            # Track AI chat behavior
+            UserBehavior.objects.create(
+                user=request.user,
+                action='AI_CHAT',
+                metadata={'message': message, 'session_id': session_id},
+                session_id=session_id
+            )
+        
+        # Generate AI response
+        ai_response = ai_service.process_shopping_query(
+            query=message,
+            products=products_data,
+            user_context=user_context
+        )
+        
+        # Save conversation history
+        if request.user.is_authenticated:
+            ConversationHistory.objects.create(
+                user=request.user,
+                session_id=session_id,
+                message=message,
+                response=ai_response,
+                context={'products_count': len(products_data)}
+            )
+        
+        return JsonResponse({
+            "response": ai_response,
+            "suggestions": [
+                "Show me trending products",
+                "What's on sale today?",
+                "Help me find electronics",
+                "Recommend products for me"
+            ]
+        })
+
+
+@csrf_exempt
+def semantic_search(request):
+    """Semantic search endpoint"""
+    if request.method != 'GET':
+        return JsonResponse({"error": "GET method required"}, status=405)
     
-    # Simple AI response (replace with actual AI integration)
-    response = f"Hello! I'm your AI shopping assistant. You asked: '{message}'. How can I help you find the perfect products today?"
+    query = request.GET.get('q', '')
+    if not query:
+        return JsonResponse({"products": []})
     
-    return JsonResponse({
-        "response": response,
-        "suggestions": [
-            "Show me popular products",
-            "What's on sale?",
-            "Help me find electronics"
-        ]
-    })
+    # Get all products for semantic search
+    products = Product.objects.filter(is_active=True)
+    products_data = [{
+        'id': p.id,
+        'name': p.name,
+        'description': p.description,
+        'category': p.category.name if p.category else '',
+        'price': float(p.price),
+        'image': p.image_url if hasattr(p, 'image_url') else '',
+        'stock': p.stock_quantity,
+        'brand': p.brand or ''
+    } for p in products]
+    
+    results = search_service.semantic_search(query, products_data)
+    return JsonResponse({"products": results})
+
+
+def get_recommendations(request):
+    """Get personalized product recommendations"""
+    user_id = request.user.id if request.user.is_authenticated else None
+    rec_type = request.GET.get('type', 'personalized')
+    limit = int(request.GET.get('limit', 10))
+    
+    if rec_type == 'personalized' and user_id:
+        recommendations = recommendation_service.get_personalized_recommendations(user_id, limit)
+    elif rec_type == 'trending':
+        recommendations = recommendation_service.get_trending_products(limit)
+    elif rec_type == 'similar':
+        product_id = request.GET.get('product_id')
+        if product_id:
+            recommendations = recommendation_service.get_similar_products(int(product_id), limit)
+        else:
+            recommendations = []
+    elif rec_type == 'frequently_bought':
+        product_id = request.GET.get('product_id')
+        if product_id:
+            recommendations = recommendation_service.get_frequently_bought_together(int(product_id), limit)
+        else:
+            recommendations = []
+    else:
+        recommendations = recommendation_service.get_trending_products(limit)
+    
+    return JsonResponse({'recommendations': recommendations})
+
+
+def search_suggestions(request):
+    """Get intelligent search suggestions"""
+    query = request.GET.get('q', '')
+    if query:
+        suggestions = search_service.generate_search_suggestions(query)
+        return JsonResponse({'suggestions': suggestions})
+    return JsonResponse({'suggestions': []})
+        
+    except Exception as e:
+        logger.error(f"AI chat error: {str(e)}")
+        return JsonResponse({
+            "response": "I'm sorry, I'm having trouble processing your request right now. Please try again later.",
+            "suggestions": [
+                "Browse our products",
+                "Check out popular items",
+                "Visit our categories"
+            ]
+        })

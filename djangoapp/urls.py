@@ -39,6 +39,9 @@ urlpatterns = [
     
     # AI Assistant endpoint
     path('assistant/chat/', views.ai_chat, name='ai_chat'),
+    path('search/semantic/', views.semantic_search, name='semantic_search'),
+    path('recommendations/', views.get_recommendations, name='get_recommendations'),
+    path('search/suggestions/', views.search_suggestions, name='search_suggestions'),
     path('assistant/chat', views.ai_chat, name='ai_chat_no_slash'),
     
     # User profile

@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Package, Shield, Zap } from 'lucide-react';
 import api from '../../config/api';
+import AIAssistant from '../ai/AIAssistant';
+import SmartSearch from '../products/SmartSearch';
+import RecommendedProducts from '../products/RecommendedProducts';
 
 interface Product {
   id: number;
@@ -190,6 +193,54 @@ const Home: React.FC = () => {
               <div className="text-3xl md:text-4xl font-light">24/7</div>
               <div className="text-white/80 font-light text-sm">Support</div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Smart Search Section */}
+      <div className="py-20 bg-white dark:bg-black">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-light mb-4 text-gray-900 dark:text-white tracking-tight">
+              Smart 
+              <span className="bg-gradient-to-r from-orange-500 via-pink-500 to-blue-600 bg-clip-text text-transparent font-medium">
+                Product Search
+              </span>
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto font-light">
+              Find exactly what you're looking for with AI-powered semantic search
+            </p>
+          </div>
+          
+          <SmartSearch onProductSelect={(product) => console.log('Selected:', product)} />
+        </div>
+      </div>
+
+      {/* Recommendations Section */}
+      <div className="py-20 bg-gray-50 dark:bg-gray-950">
+        <div className="max-w-6xl mx-auto px-6 space-y-16">
+          <RecommendedProducts type="trending" limit={6} />
+          <RecommendedProducts type="personalized" limit={6} />
+        </div>
+      </div>
+
+      {/* AI Assistant Section */}
+      <div className="py-20 bg-white dark:bg-black">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-light mb-4 text-gray-900 dark:text-white tracking-tight">
+              Meet Your 
+              <span className="bg-gradient-to-r from-orange-500 via-pink-500 to-blue-600 bg-clip-text text-transparent font-medium">
+                AI Assistant
+              </span>
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto font-light">
+              Get personalized product recommendations and shopping assistance powered by advanced AI
+            </p>
+          </div>
+          
+          <div className="max-w-2xl mx-auto">
+            <AIAssistant />
           </div>
         </div>
       </div>
