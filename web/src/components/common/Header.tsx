@@ -19,24 +19,24 @@ const Header: React.FC = () => {
 
   return (
     <div className="relative">
-      <div className="bg-gradient-to-r from-orange-50/50 via-pink-50/50 to-blue-50/50 dark:from-orange-950/20 dark:via-pink-950/20 dark:to-blue-950/20 border-b border-gray-200/50 dark:border-gray-800/50">
+      <div className="bg-white dark:bg-black border-b border-gray-100 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-between h-14">
             {/* Left Side - Welcome Message */}
             <div className="flex items-center space-x-4">
               <div className="hidden sm:block">
-                <p className="text-sm text-gray-600 dark:text-gray-300">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   {isLoggedIn ? (
                     <span>
                       Welcome back, 
-                      <span className="font-semibold bg-gradient-to-r from-orange-500 via-pink-500 to-blue-600 bg-clip-text text-transparent ml-1">
+                      <span className="font-medium bg-gradient-to-r from-orange-500 via-pink-500 to-blue-600 bg-clip-text text-transparent ml-1">
                         {username}
                       </span>
                     </span>
                   ) : (
                     <span>
                       Discover amazing products with 
-                      <span className="font-semibold bg-gradient-to-r from-orange-500 via-pink-500 to-blue-600 bg-clip-text text-transparent ml-1">
+                      <span className="font-medium bg-gradient-to-r from-orange-500 via-pink-500 to-blue-600 bg-clip-text text-transparent ml-1">
                         AI recommendations
                       </span>
                     </span>
@@ -49,7 +49,7 @@ const Header: React.FC = () => {
             <div className="flex items-center space-x-1">
               <button
                 onClick={toggleTheme}
-                className="p-2.5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
+                className="p-2.5 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition-all duration-300"
                 title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
               >
                 {theme === 'light' ? (
@@ -61,13 +61,13 @@ const Header: React.FC = () => {
               
               <Link 
                 to="/products" 
-                className="hidden sm:block text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
+                className="hidden sm:block text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition-all duration-300"
               >
                 Browse
               </Link>
               
               <button 
-                className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
+                className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition-all duration-300"
                 onClick={toggleSearch}
               >
                 Search
@@ -77,13 +77,13 @@ const Header: React.FC = () => {
                 <div className="flex items-center space-x-1">
                   <Link 
                     to="/profile" 
-                    className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
+                    className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition-all duration-300"
                   >
                     Profile
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
+                    className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition-all duration-300"
                   >
                     Sign Out
                   </button>
@@ -92,13 +92,13 @@ const Header: React.FC = () => {
                 <div className="flex items-center space-x-1">
                   <Link
                     to="/register"
-                    className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
+                    className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition-all duration-300"
                   >
                     Sign Up
                   </Link>
                   <Link
                     to="/login"
-                    className="bg-gradient-to-r from-orange-500 via-pink-500 to-blue-600 hover:from-orange-600 hover:via-pink-600 hover:to-blue-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md"
+                    className="bg-gradient-to-r from-orange-500 via-pink-500 to-blue-600 hover:from-orange-600 hover:via-pink-600 hover:to-blue-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                   >
                     Sign In
                   </Link>
