@@ -5,6 +5,8 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { SearchProvider, useSearch } from './components/common/SearchProvider';
 import { CartProvider } from './contexts/CartContext';
+import { ToastProvider } from './contexts/ToastContext';
+import ToastContainer from './components/common/ToastContainer';
 import Navbar from './components/common/Navbar';
 import Header from './components/common/Header';
 import Footer from './components/common/Footer';
@@ -53,21 +55,24 @@ const theme = createTheme({
 function App() {
   return (
     <ThemeProvider>
-      <CartProvider>
-        <SearchProvider>
-          <MuiThemeProvider theme={theme}>
-            <CssBaseline />
-            <Router>
-            <div className="App">
-              <Navbar />
-              <Header />
-              <MainContent />
-              <Footer />
-            </div>
-            </Router>
-          </MuiThemeProvider>
-        </SearchProvider>
-      </CartProvider>
+      <ToastProvider>
+        <CartProvider>
+          <SearchProvider>
+            <MuiThemeProvider theme={theme}>
+              <CssBaseline />
+              <Router>
+              <div className="App">
+                <Navbar />
+                <Header />
+                <MainContent />
+                <Footer />
+                <ToastContainer />
+              </div>
+              </Router>
+            </MuiThemeProvider>
+          </SearchProvider>
+        </CartProvider>
+      </ToastProvider>
     </ThemeProvider>
   );
 }

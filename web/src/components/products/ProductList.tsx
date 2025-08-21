@@ -15,6 +15,7 @@ import SearchAutocomplete from './SearchAutocomplete';
 import ProductComparison from './ProductComparison';
 import useLocalStorage from '../../hooks/useLocalStorage';
 import { useCart } from '../../contexts/CartContext';
+import { useToast } from '../../contexts/ToastContext';
 
 interface Product {
   id: number;
@@ -43,6 +44,7 @@ const ProductList: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const { updateCartCount } = useCart();
+  const { showToast } = useToast();
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(12);
@@ -264,15 +266,17 @@ const ProductList: React.FC = () => {
   const handleToggleCompare = (productId: number, isAdding: boolean) => {
     if (isAdding) {
       if (comparisonProducts.length >= 3) {
-        alert('You can compare up to 3 products at a time');
+        showToast('You can compare up to 3 products at a time', 'warning');
         return;
       }
       const product = products.find(p => p.id === productId);
       if (product) {
         setComparisonProducts(prev => [...prev, product]);
+        showToast('Product added to comparison', 'info');
       }
     } else {
       setComparisonProducts(prev => prev.filter(p => p.id !== productId));
+      showToast('Product removed from comparison', 'info');
     }
   };
 
@@ -283,10 +287,10 @@ const ProductList: React.FC = () => {
         quantity: 1
       });
       updateCartCount();
-      alert('Product added to cart!');
+      showToast('Product added to cart!', 'success');
     } catch (error) {
       console.error('Error adding to cart:', error);
-      alert('Please login to add items to cart');
+      showToast('Please login to add items to cart', 'error');
     }
   };
 

@@ -5,6 +5,7 @@ import api from '../../config/api';
 import Loading from '../common/Loading';
 import Breadcrumb from '../common/Breadcrumb';
 import { useCart } from '../../contexts/CartContext';
+import { useToast } from '../../contexts/ToastContext';
 
 interface CartItem {
   id: number;
@@ -23,6 +24,7 @@ const Cart: React.FC = () => {
   const [updating, setUpdating] = useState<number | null>(null);
   const navigate = useNavigate();
   const { updateCartCount } = useCart();
+  const { showToast } = useToast();
 
   useEffect(() => {
     fetchCart();
@@ -76,11 +78,11 @@ const Cart: React.FC = () => {
     try {
       const response = await api.post('/api/orders/create/');
       updateCartCount();
-      alert('Order placed successfully!');
+      showToast('Order placed successfully!', 'success');
       navigate('/orders');
     } catch (error) {
       console.error('Error creating order:', error);
-      alert('Error placing order');
+      showToast('Error placing order', 'error');
     }
   };
 
