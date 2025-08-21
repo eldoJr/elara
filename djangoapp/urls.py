@@ -42,6 +42,32 @@ urlpatterns = [
     path('search/semantic/', views.semantic_search, name='semantic_search'),
     path('recommendations/', views.get_recommendations, name='get_recommendations'),
     path('search/suggestions/', views.search_suggestions, name='search_suggestions'),
+    
+    # Phase 3: Advanced AI Features
+    path('shopping-list/create/', views.create_shopping_list, name='create_shopping_list'),
+    path('shopping/guidance/', views.get_shopping_guidance, name='shopping_guidance'),
+    path('voice/query/', views.voice_query, name='voice_query'),
+    
+    # Predictive Analytics
+    path('analytics/demand-forecast/', views.demand_forecast, name='demand_forecast'),
+    path('analytics/inventory-optimization/', views.inventory_optimization, name='inventory_optimization'),
+    path('analytics/price-analysis/', views.price_analysis, name='price_analysis'),
+    path('analytics/customer-ltv/', views.customer_lifetime_value, name='customer_lifetime_value'),
+    
+    # Smart Notifications
+    path('notifications/', views.get_notifications, name='get_notifications'),
+    path('marketing/campaign/', views.create_marketing_campaign, name='create_marketing_campaign'),
+    
+    # Phase 4: Advanced Personalization
+    path('personalization/ui/', views.get_personalized_ui, name='personalized_ui'),
+    path('personalization/layout/', views.get_adaptive_layout, name='adaptive_layout'),
+    path('personalization/navigation/', views.get_dynamic_navigation, name='dynamic_navigation'),
+    
+    # Smart Cart Features
+    path('cart/optimize/', views.optimize_cart, name='optimize_cart'),
+    path('cart/bundles/', views.get_smart_bundles, name='smart_bundles'),
+    path('cart/recovery/', views.recover_abandoned_cart, name='cart_recovery'),
+    path('pricing/dynamic/', views.get_dynamic_pricing, name='dynamic_pricing'),
     path('assistant/chat', views.ai_chat, name='ai_chat_no_slash'),
     
     # User profile

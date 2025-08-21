@@ -17,8 +17,8 @@ class RecommendationService:
                 return self._get_popular_products(limit)
             
             # Collaborative filtering approach
-            viewed_products = user_behaviors.filter(action='view').values_list('product_id', flat=True)
-            purchased_products = user_behaviors.filter(action='purchase').values_list('product_id', flat=True)
+            viewed_products = user_behaviors.filter(action='VIEW').values_list('product_id', flat=True)
+            purchased_products = user_behaviors.filter(action='PURCHASE').values_list('product_id', flat=True)
             
             # Find similar users
             similar_users = self._find_similar_users(user_id, viewed_products, purchased_products)
@@ -99,7 +99,7 @@ class RecommendationService:
             
             trending = UserBehavior.objects.filter(
                 timestamp__gte=week_ago,
-                action='view'
+                action='VIEW'
             ).values('product_id').annotate(
                 view_count=Count('product_id')
             ).order_by('-view_count')
@@ -116,32 +116,40 @@ class RecommendationService:
     def _find_similar_users(self, user_id: int, viewed_products: List[int], purchased_products: List[int]) -> List[int]:
         """Find users with similar behavior"""
         # Find users who viewed/purchased similar products
-        similar_users = UserBehavior.objects.filter(
-            Q(product_id__in=viewed_products) | Q(product_id__in=purchased_products)
-        ).exclude(user_id=user_id).values('user_id').annotate(
-            similarity_score=Count('user_id')
-        ).order_by('-similarity_score')
-        
-        return [user['user_id'] for user in similar_users[:20]]
+        try:
+            similar_users = UserBehavior.objects.filter(
+                Q(product_id__in=viewed_products) | Q(product_id__in=purchased_products)
+            ).exclude(user_id=user_id).values('user_id').annotate(
+                similarity_score=Count('user_id')
+            ).order_by('-similarity_score')
+            
+            return [user['user_id'] for user in similar_users[:20]]
+        except Exception as e:
+            logger.error(f"Similar users error: {str(e)}")
+            return []
     
     def _get_collaborative_recommendations(self, user_id: int, similar_users: List[int], 
                                          viewed_products: List[int], purchased_products: List[int], 
                                          limit: int) -> List[Dict]:
         """Get recommendations based on similar users' behavior"""
         # Get products that similar users liked but current user hasn't seen
-        recommended_products = UserBehavior.objects.filter(
-            user_id__in=similar_users,
-            action__in=['view', 'purchase']
-        ).exclude(
-            product_id__in=list(viewed_products) + list(purchased_products)
-        ).values('product_id').annotate(
-            recommendation_score=Count('product_id')
-        ).order_by('-recommendation_score')
-        
-        product_ids = [item['product_id'] for item in recommended_products[:limit]]
-        products = Product.objects.filter(id__in=product_ids)
-        
-        return [self._product_to_dict(p) for p in products]
+        try:
+            recommended_products = UserBehavior.objects.filter(
+                user_id__in=similar_users,
+                action__in=['VIEW', 'PURCHASE']
+            ).exclude(
+                product_id__in=list(viewed_products) + list(purchased_products)
+            ).values('product_id').annotate(
+                recommendation_score=Count('product_id')
+            ).order_by('-recommendation_score')
+            
+            product_ids = [item['product_id'] for item in recommended_products[:limit]]
+            products = Product.objects.filter(id__in=product_ids, is_active=True)
+            
+            return [self._product_to_dict(p) for p in products]
+        except Exception as e:
+            logger.error(f"Collaborative recommendations error: {str(e)}")
+            return []
     
     def _get_content_based_recommendations(self, viewed_products: List[int], limit: int) -> List[Dict]:
         """Get recommendations based on product content similarity"""
@@ -154,31 +162,54 @@ class RecommendationService:
         ).values_list('category', flat=True).distinct()
         
         # Recommend products from same categories
-        recommendations = Product.objects.filter(
-            category__in=viewed_categories
-        ).exclude(id__in=viewed_products)
-        
-        return [self._product_to_dict(p) for p in recommendations[:limit]]
+        try:
+            recommendations = Product.objects.filter(
+                category__in=viewed_categories,
+                is_active=True
+            ).exclude(id__in=viewed_products)
+            
+            return [self._product_to_dict(p) for p in recommendations[:limit]]
+        except Exception as e:
+            logger.error(f"Content-based recommendations error: {str(e)}")
+            return []
     
     def _get_popular_products(self, limit: int) -> List[Dict]:
         """Get popular products as fallback"""
-        popular_products = Product.objects.annotate(
-            view_count=Count('userbehavior')
-        ).order_by('-view_count')
-        
-        return [self._product_to_dict(p) for p in popular_products[:limit]]
+        try:
+            popular_products = Product.objects.filter(is_active=True).annotate(
+                view_count=Count('userbehavior')
+            ).order_by('-view_count')
+            
+            return [self._product_to_dict(p) for p in popular_products[:limit]]
+        except Exception as e:
+            logger.error(f"Popular products fallback error: {str(e)}")
+            # Final fallback - just get any products
+            products = Product.objects.filter(is_active=True)[:limit]
+            return [self._product_to_dict(p) for p in products]
     
     def _product_to_dict(self, product: Product) -> Dict:
         """Convert product model to dictionary"""
-        return {
-            'id': product.id,
-            'name': product.name,
-            'description': product.description,
-            'price': float(product.price),
-            'category': product.category.name if product.category else '',
-            'image': product.image.url if product.image else '',
-            'stock': product.stock
-        }
+        try:
+            return {
+                'id': product.id,
+                'name': product.name,
+                'description': product.description or '',
+                'price': float(product.price),
+                'category': product.category.name if hasattr(product, 'category') and product.category else '',
+                'image': getattr(product, 'image_url', '') or (product.image.url if hasattr(product, 'image') and product.image else ''),
+                'stock': getattr(product, 'stock_quantity', 0) or getattr(product, 'stock', 0)
+            }
+        except Exception as e:
+            logger.error(f"Product conversion error: {str(e)}")
+            return {
+                'id': product.id,
+                'name': getattr(product, 'name', 'Unknown Product'),
+                'description': '',
+                'price': 0.0,
+                'category': '',
+                'image': '',
+                'stock': 0
+            }
 
 # Global instance
 recommendation_service = RecommendationService()

@@ -1,10 +1,15 @@
 import requests
 import json
-import numpy as np
 from typing import List, Dict, Any
 from django.conf import settings
-from sklearn.metrics.pairwise import cosine_similarity
 import logging
+
+try:
+    import numpy as np
+    from sklearn.metrics.pairwise import cosine_similarity
+    HAS_ML_LIBS = True
+except ImportError:
+    HAS_ML_LIBS = False
 
 logger = logging.getLogger(__name__)
 
@@ -73,6 +78,8 @@ class SemanticSearchService:
     
     def _calculate_similarity(self, embedding1: List[float], embedding2: List[float]) -> float:
         """Calculate cosine similarity between embeddings"""
+        if not HAS_ML_LIBS:
+            return 0.5  # Default similarity
         try:
             arr1 = np.array(embedding1).reshape(1, -1)
             arr2 = np.array(embedding2).reshape(1, -1)

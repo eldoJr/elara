@@ -13,6 +13,11 @@ from .models import Category, Product, Cart, CartItem, Order, OrderItem, UserPro
 from .services.database_service import db_service
 from .services.search_service import search_service
 from .services.recommendation_service import recommendation_service
+from .services.conversational_service import conversational_service
+from .services.predictive_service import predictive_service
+from .services.notification_service import notification_service
+from .services.personalization_service import personalization_service
+from .services.smart_cart_service import smart_cart_service
 
 logger = logging.getLogger(__name__)
 
@@ -587,6 +592,17 @@ def ai_chat(request):
                 "Recommend products for me"
             ]
         })
+        
+    except Exception as e:
+        logger.error(f"AI chat error: {str(e)}")
+        return JsonResponse({
+            "response": "I'm sorry, I'm having trouble processing your request right now. Please try again later.",
+            "suggestions": [
+                "Browse our products",
+                "Check out popular items",
+                "Visit our categories"
+            ]
+        })
 
 
 @csrf_exempt
@@ -651,14 +667,194 @@ def search_suggestions(request):
         suggestions = search_service.generate_search_suggestions(query)
         return JsonResponse({'suggestions': suggestions})
     return JsonResponse({'suggestions': []})
+
+
+@csrf_exempt
+def create_shopping_list(request):
+    """Create AI-powered shopping list"""
+    if request.method != 'POST':
+        return JsonResponse({"error": "POST method required"}, status=405)
+    
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Authentication required"}, status=401)
+    
+    try:
+        data = json.loads(request.body)
+        items = data.get('items', [])
+        
+        result = conversational_service.create_shopping_list(request.user.id, items)
+        return JsonResponse(result)
         
     except Exception as e:
-        logger.error(f"AI chat error: {str(e)}")
-        return JsonResponse({
-            "response": "I'm sorry, I'm having trouble processing your request right now. Please try again later.",
-            "suggestions": [
-                "Browse our products",
-                "Check out popular items",
-                "Visit our categories"
-            ]
-        })
+        logger.error(f"Shopping list error: {str(e)}")
+        return JsonResponse({"error": "Failed to create shopping list"}, status=500)
+
+
+def get_shopping_guidance(request):
+    """Get personalized shopping journey guidance"""
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Authentication required"}, status=401)
+    
+    intent = request.GET.get('intent', 'general_shopping')
+    result = conversational_service.get_shopping_journey_guidance(request.user.id, intent)
+    return JsonResponse(result)
+
+
+@csrf_exempt
+def voice_query(request):
+    """Process voice-to-text shopping queries"""
+    if request.method != 'POST':
+        return JsonResponse({"error": "POST method required"}, status=405)
+    
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Authentication required"}, status=401)
+    
+    try:
+        data = json.loads(request.body)
+        voice_text = data.get('voice_text', '')
+        
+        result = conversational_service.handle_voice_query(request.user.id, voice_text)
+        return JsonResponse(result)
+        
+    except Exception as e:
+        logger.error(f"Voice query error: {str(e)}")
+        return JsonResponse({"error": "Failed to process voice query"}, status=500)
+
+
+def demand_forecast(request):
+    """Get demand forecast for product"""
+    product_id = request.GET.get('product_id')
+    days_ahead = int(request.GET.get('days', 30))
+    
+    if not product_id:
+        return JsonResponse({"error": "Product ID required"}, status=400)
+    
+    result = predictive_service.forecast_demand(int(product_id), days_ahead)
+    return JsonResponse(result)
+
+
+def inventory_optimization(request):
+    """Get inventory optimization suggestions"""
+    category_id = request.GET.get('category_id')
+    category_id = int(category_id) if category_id else None
+    
+    result = predictive_service.optimize_inventory(category_id)
+    return JsonResponse(result)
+
+
+def price_analysis(request):
+    """Get price trend analysis"""
+    product_id = request.GET.get('product_id')
+    
+    if not product_id:
+        return JsonResponse({"error": "Product ID required"}, status=400)
+    
+    result = predictive_service.analyze_price_trends(int(product_id))
+    return JsonResponse(result)
+
+
+def customer_lifetime_value(request):
+    """Get customer lifetime value prediction"""
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Authentication required"}, status=401)
+    
+    result = predictive_service.predict_customer_lifetime_value(request.user.id)
+    return JsonResponse(result)
+
+
+def get_notifications(request):
+    """Get personalized notifications"""
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Authentication required"}, status=401)
+    
+    notifications = notification_service.generate_personalized_notifications(request.user.id)
+    return JsonResponse({'notifications': notifications})
+
+
+@csrf_exempt
+def create_marketing_campaign(request):
+    """Create AI-powered marketing campaign"""
+    if request.method != 'POST':
+        return JsonResponse({"error": "POST method required"}, status=405)
+    
+    try:
+        data = json.loads(request.body)
+        target_segment = data.get('target_segment', 'general')
+        campaign_type = data.get('campaign_type', 'promotional')
+        
+        result = notification_service.create_marketing_campaign(target_segment, campaign_type)
+        return JsonResponse(result)
+        
+    except Exception as e:
+        logger.error(f"Marketing campaign error: {str(e)}")
+        return JsonResponse({"error": "Failed to create campaign"}, status=500)
+
+
+def get_personalized_ui(request):
+    """Get personalized UI layout"""
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Authentication required"}, status=401)
+    
+    result = personalization_service.get_personalized_ui_layout(request.user.id)
+    return JsonResponse(result)
+
+
+def get_adaptive_layout(request):
+    """Get adaptive product layout"""
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Authentication required"}, status=401)
+    
+    category_id = request.GET.get('category_id')
+    category_id = int(category_id) if category_id else None
+    
+    result = personalization_service.get_adaptive_product_layout(request.user.id, category_id)
+    return JsonResponse(result)
+
+
+def get_dynamic_navigation(request):
+    """Get dynamic navigation"""
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Authentication required"}, status=401)
+    
+    result = personalization_service.get_dynamic_navigation(request.user.id)
+    return JsonResponse(result)
+
+
+def optimize_cart(request):
+    """Optimize user's cart"""
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Authentication required"}, status=401)
+    
+    result = smart_cart_service.optimize_cart(request.user.id)
+    return JsonResponse(result)
+
+
+def get_smart_bundles(request):
+    """Get smart product bundles"""
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Authentication required"}, status=401)
+    
+    bundles = smart_cart_service.suggest_smart_bundles(request.user.id)
+    return JsonResponse({'bundles': bundles})
+
+
+def recover_abandoned_cart(request):
+    """Get abandoned cart recovery strategy"""
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Authentication required"}, status=401)
+    
+    result = smart_cart_service.recover_abandoned_cart(request.user.id)
+    return JsonResponse(result)
+
+
+def get_dynamic_pricing(request):
+    """Get dynamic pricing for product"""
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Authentication required"}, status=401)
+    
+    product_id = request.GET.get('product_id')
+    if not product_id:
+        return JsonResponse({"error": "Product ID required"}, status=400)
+    
+    result = smart_cart_service.apply_dynamic_pricing(request.user.id, int(product_id))
+    return JsonResponse(result)

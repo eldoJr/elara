@@ -23,6 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-your-secret-key-here'
 
+# DeepSeek AI Configuration
+DEEPSEEK_API_KEY = 'your_deepseek_api_key_here'
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 

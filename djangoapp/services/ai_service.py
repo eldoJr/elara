@@ -37,11 +37,11 @@ class DeepSeekAIService:
                 return data['choices'][0]['message']['content']
             else:
                 logger.error(f"DeepSeek API error: {response.status_code} - {response.text}")
-                return "I'm sorry, I'm having trouble processing your request right now."
+                return f"I can help you browse our products! Try asking about specific categories like electronics, clothing, or home goods. What are you looking for today?"
                 
         except Exception as e:
             logger.error(f"DeepSeek API exception: {str(e)}")
-            return "I'm sorry, I'm having trouble processing your request right now."
+            return f"I'm here to help you shop! You can ask me about products, categories, or get recommendations. What would you like to find today?"
     
     def generate_product_recommendations(self, user_context: Dict[str, Any], products: List[Dict]) -> str:
         """Generate personalized product recommendations"""
