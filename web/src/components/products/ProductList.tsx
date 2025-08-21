@@ -39,6 +39,7 @@ const ProductList: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState('newest');
   const [view, setView] = useState<'grid' | 'list'>('grid');
+  const [isMobile, setIsMobile] = useState(false);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -56,6 +57,17 @@ const ProductList: React.FC = () => {
     priceRange: [0, 1000] as number[]
   });
   const location = useLocation();
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     fetchProducts();
@@ -335,8 +347,8 @@ const ProductList: React.FC = () => {
                 sortBy={sortBy}
                 onSortChange={handleSortChange}
                 totalProducts={filteredProducts.length}
-                view={view}
-                onViewChange={setView}
+                view={isMobile ? 'list' : view}
+                onViewChange={isMobile ? () => {} : setView}
               />
             </div>
 
@@ -355,9 +367,9 @@ const ProductList: React.FC = () => {
             ) : (
               <>
                 <div className={`grid gap-4 sm:gap-6 mb-6 sm:mb-8 ${
-                  view === 'grid' 
-                    ? 'grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4' 
-                    : 'grid-cols-1'
+                  (isMobile || view === 'list')
+                    ? 'grid-cols-1' 
+                    : 'grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'
                 }`}>
                   {paginatedProducts.map((product) => (
                     <ProductCard
@@ -367,7 +379,7 @@ const ProductList: React.FC = () => {
                       onQuickView={setQuickViewProduct}
                       onToggleCompare={handleToggleCompare}
                       isInComparison={comparisonProducts.some(p => p.id === product.id)}
-                      view={view}
+                      view={isMobile ? 'list' : view}
                     />
                   ))}
                 </div>
