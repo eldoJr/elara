@@ -290,20 +290,20 @@ const ProductList: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="flex items-center justify-between py-1">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4 gap-2">
           <Breadcrumb items={[
             { label: 'Store', path: '/' },
             { label: 'Products' }
           ]} />
-          <h1 className="text-lg font-bold bg-gradient-to-r from-pink-600 via-orange-500 to-blue-600 bg-clip-text text-transparent">
+          <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-pink-600 via-orange-500 to-blue-600 bg-clip-text text-transparent">
             Our Products
           </h1>
         </div>
         
-        <div className="flex gap-6 pb-8">
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 pb-8">
           {/* Desktop Filter Sidebar */}
-          <div className="hidden lg:block">
+          <div className="hidden lg:block lg:w-64 xl:w-72 flex-shrink-0">
             <FilterSidebar 
               onFiltersChange={handleFiltersChange}
               activeFilters={activeFilters}
@@ -311,9 +311,9 @@ const ProductList: React.FC = () => {
           </div>
 
           {/* Main Content */}
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             {/* Search Bar */}
-            <div className="mb-6">
+            <div className="mb-4 sm:mb-6">
               <SearchAutocomplete
                 onSearch={setSearchQuery}
                 placeholder="Search products..."
@@ -321,7 +321,7 @@ const ProductList: React.FC = () => {
             </div>
 
             {/* Filter Chips */}
-            <div className="mb-4">
+            <div className="mb-3 sm:mb-4">
               <FilterChips
                 activeFilters={activeFilters}
                 onRemoveFilter={handleRemoveFilter}
@@ -330,7 +330,7 @@ const ProductList: React.FC = () => {
             </div>
 
             {/* Product Sorting */}
-            <div className="mb-6">
+            <div className="mb-4 sm:mb-6">
               <ProductSorting
                 sortBy={sortBy}
                 onSortChange={handleSortChange}
@@ -343,20 +343,20 @@ const ProductList: React.FC = () => {
             {/* Products Grid */}
             <div>
             {filteredProducts.length === 0 ? (
-              <div className="text-center py-16">
-                <div className="text-6xl mb-4">🔍</div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              <div className="text-center py-12 sm:py-16">
+                <div className="text-4xl sm:text-6xl mb-4">🔍</div>
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-2">
                   No products found
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 px-4">
                   Try adjusting your filters or search terms
                 </p>
               </div>
             ) : (
               <>
-                <div className={`grid gap-6 mb-8 ${
+                <div className={`grid gap-4 sm:gap-6 mb-6 sm:mb-8 ${
                   view === 'grid' 
-                    ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
+                    ? 'grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4' 
                     : 'grid-cols-1'
                 }`}>
                   {paginatedProducts.map((product) => (
@@ -387,9 +387,9 @@ const ProductList: React.FC = () => {
         {/* Mobile Filter Button */}
         <button
           onClick={() => setMobileFilterOpen(true)}
-          className="lg:hidden fixed bottom-6 right-6 bg-gradient-to-r from-pink-500 to-orange-500 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all z-50"
+          className="lg:hidden fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-gradient-to-r from-pink-500 to-orange-500 text-white p-3 sm:p-4 rounded-full shadow-lg hover:shadow-xl transition-all z-50"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
           </svg>
         </button>
@@ -413,12 +413,13 @@ const ProductList: React.FC = () => {
 
         {/* Product Comparison */}
         {comparisonProducts.length > 0 && (
-          <div className="fixed bottom-6 left-6 z-50">
+          <div className="fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-50">
             <button
               onClick={() => setIsComparisonOpen(true)}
-              className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
+              className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-full shadow-lg hover:shadow-xl transition-all flex items-center gap-2 text-sm sm:text-base"
             >
-              <span>Compare ({comparisonProducts.length})</span>
+              <span className="hidden xs:inline">Compare ({comparisonProducts.length})</span>
+              <span className="xs:hidden">{comparisonProducts.length}</span>
             </button>
           </div>
         )}
