@@ -428,31 +428,28 @@ def create_order(request):
 
 def get_profile(request):
     """Get user profile"""
+    logger.info(f"Profile request - User authenticated: {request.user.is_authenticated}")
+    logger.info(f"Profile request - User: {request.user}")
+    
     if not request.user.is_authenticated:
-        return JsonResponse({"profile": {
-            'username': 'guest',
-            'email': '',
-            'first_name': '',
-            'last_name': '',
-            'phone': '',
-            'address': '',
-            'date_of_birth': None,
-        }})
+        return JsonResponse({"error": "Authentication required"}, status=401)
     
     try:
-        profile = UserProfile.objects.get(user=request.user)
+        profile, created = UserProfile.objects.get_or_create(user=request.user)
         profile_data = {
             'username': request.user.username,
             'email': request.user.email,
             'first_name': request.user.first_name,
             'last_name': request.user.last_name,
-            'phone': profile.phone,
-            'address': profile.address,
+            'phone': profile.phone or '',
+            'address': profile.address or '',
             'date_of_birth': profile.date_of_birth.isoformat() if profile.date_of_birth else None,
         }
+        logger.info(f"Profile data: {profile_data}")
         return JsonResponse({"profile": profile_data})
-    except UserProfile.DoesNotExist:
-        return JsonResponse({"error": "Profile not found"}, status=404)
+    except Exception as e:
+        logger.error(f"Error getting profile: {e}")
+        return JsonResponse({"error": "Error retrieving profile"}, status=500)
 
 
 @csrf_exempt
@@ -461,22 +458,33 @@ def update_profile(request):
     if request.method != 'POST':
         return JsonResponse({"error": "POST method required"}, status=405)
     
-    data = json.loads(request.body)
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Authentication required"}, status=401)
     
-    # Update user fields
-    user = request.user
-    user.first_name = data.get('first_name', user.first_name)
-    user.last_name = data.get('last_name', user.last_name)
-    user.email = data.get('email', user.email)
-    user.save()
-    
-    # Update profile fields
-    profile, created = UserProfile.objects.get_or_create(user=user)
-    profile.phone = data.get('phone', profile.phone)
-    profile.address = data.get('address', profile.address)
-    profile.save()
-    
-    return JsonResponse({"status": "Profile updated successfully"})
+    try:
+        data = json.loads(request.body)
+        logger.info(f"Update profile data: {data}")
+        
+        # Update user fields
+        user = request.user
+        user.first_name = data.get('first_name', user.first_name)
+        user.last_name = data.get('last_name', user.last_name)
+        user.email = data.get('email', user.email)
+        user.save()
+        
+        # Update profile fields
+        profile, created = UserProfile.objects.get_or_create(user=user)
+        profile.phone = data.get('phone', profile.phone or '')
+        profile.address = data.get('address', profile.address or '')
+        if data.get('date_of_birth'):
+            profile.date_of_birth = data.get('date_of_birth')
+        profile.save()
+        
+        logger.info("Profile updated successfully")
+        return JsonResponse({"status": "Profile updated successfully"})
+    except Exception as e:
+        logger.error(f"Error updating profile: {e}")
+        return JsonResponse({"error": "Error updating profile"}, status=500)
 
 
 @csrf_exempt

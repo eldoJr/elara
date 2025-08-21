@@ -27,15 +27,33 @@ const Profile: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
-    fetchProfile();
+    const username = localStorage.getItem('username');
+    if (username) {
+      fetchProfile();
+    } else {
+      setMessage('Please log in to view your profile');
+    }
   }, []);
 
   const fetchProfile = async () => {
+    setLoading(true);
     try {
+      console.log('Fetching profile from:', '/api/profile/');
       const response = await api.get('/api/profile/');
+      console.log('Profile response:', response.data);
       setProfile(response.data.profile);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching profile:', error);
+      console.error('Error response:', error.response);
+      if (error.response?.status === 401) {
+        setMessage('Please log in to view your profile');
+      } else if (error.response?.status === 404) {
+        setMessage('Profile endpoint not found. Please check if Django server is running.');
+      } else {
+        setMessage('Error loading profile data');
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -52,11 +70,22 @@ const Profile: React.FC = () => {
     setMessage('');
 
     try {
-      await api.post('/api/profile/update/', profile);
+      console.log('Updating profile with data:', profile);
+      const response = await api.post('/api/profile/update/', profile);
+      console.log('Update response:', response.data);
       setMessage('Profile updated successfully!');
       setIsEditing(false);
-    } catch (error) {
-      setMessage('Error updating profile');
+      await fetchProfile();
+    } catch (error: any) {
+      console.error('Error updating profile:', error);
+      console.error('Error response:', error.response);
+      if (error.response?.status === 401) {
+        setMessage('Please log in to update your profile');
+      } else if (error.response?.status === 404) {
+        setMessage('Update endpoint not found. Please check if Django server is running.');
+      } else {
+        setMessage('Error updating profile');
+      }
     } finally {
       setLoading(false);
     }
@@ -91,11 +120,17 @@ const Profile: React.FC = () => {
           <div className="p-8">
             {message && (
               <div className={`mb-6 p-4 rounded-xl ${
-                message.includes('Error') 
+                message.includes('Error') || message.includes('log in')
                   ? 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400'
                   : 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-600 dark:text-green-400'
               }`}>
                 <p className="text-sm">{message}</p>
+              </div>
+            )}
+            
+            {loading && (
+              <div className="mb-6 p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400">
+                <p className="text-sm">Loading profile data...</p>
               </div>
             )}
             
@@ -231,34 +266,29 @@ const Profile: React.FC = () => {
                   <MapPin className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
                   <textarea
                     name="address"
-                    rows={3}
                     value={profile.address}
                     onChange={handleChange}
                     disabled={!isEditing}
+                    rows={3}
                     className={`w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white resize-none ${
                       isEditing 
                         ? 'bg-white dark:bg-gray-800 focus:ring-2 focus:ring-orange-500 focus:border-transparent' 
                         : 'bg-gray-50 dark:bg-gray-800'
                     }`}
+                    placeholder="Enter your address"
                   />
                 </div>
               </div>
               
               {isEditing && (
-                <div className="flex gap-4 pt-4">
+                <div className="flex gap-4 pt-6">
                   <button
                     type="submit"
                     disabled={loading}
-                    className="flex-1 bg-gradient-to-r from-orange-500 via-pink-500 to-blue-600 hover:from-orange-600 hover:via-pink-600 hover:to-blue-700 text-white py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="flex items-center gap-2 bg-gradient-to-r from-orange-500 via-pink-500 to-blue-600 hover:from-orange-600 hover:via-pink-600 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {loading ? (
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    ) : (
-                      <>
-                        <Save className="w-5 h-5" />
-                        Save Changes
-                      </>
-                    )}
+                    <Save className="w-5 h-5" />
+                    {loading ? 'Saving...' : 'Save Changes'}
                   </button>
                   <button
                     type="button"
@@ -266,7 +296,7 @@ const Profile: React.FC = () => {
                       setIsEditing(false);
                       fetchProfile();
                     }}
-                    className="px-6 py-3 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                    className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300"
                   >
                     Cancel
                   </button>
