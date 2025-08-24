@@ -1,36 +1,36 @@
-/* Elara Design System */
+/* Elara Design System - Apple Store Inspired */
 
 /* Typography Hierarchy */
 .text-display {
-  @apply text-4xl font-bold tracking-tight;
+  @apply text-6xl md:text-7xl font-light tracking-tight;
 }
 
 .text-heading-1 {
-  @apply text-3xl font-semibold tracking-tight;
+  @apply text-4xl md:text-5xl font-light tracking-tight;
 }
 
 .text-heading-2 {
-  @apply text-2xl font-semibold;
+  @apply text-3xl md:text-4xl font-light tracking-tight;
 }
 
 .text-heading-3 {
-  @apply text-xl font-medium;
+  @apply text-2xl font-medium;
 }
 
 .text-body-large {
-  @apply text-lg leading-relaxed;
+  @apply text-xl md:text-2xl font-light leading-relaxed;
 }
 
 .text-body {
-  @apply text-base leading-normal;
+  @apply text-lg font-light leading-normal;
 }
 
 .text-body-small {
-  @apply text-sm leading-normal;
+  @apply text-base font-light leading-normal;
 }
 
 .text-caption {
-  @apply text-xs font-medium uppercase tracking-wide;
+  @apply text-sm font-medium tracking-wide;
 }
 
 /* Color System */
@@ -98,19 +98,19 @@
 
 /* Component Styles */
 .card {
-  @apply bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  @apply bg-white rounded-2xl shadow-sm transition-all duration-500 hover:scale-105;
 }
 
 .product-card {
-  @apply bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2;
+  @apply bg-white rounded-2xl overflow-hidden transition-all duration-500 hover:scale-105;
 }
 
 .button-primary {
-  @apply bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-all duration-200 hover:shadow-md hover:scale-105 active:scale-95;
+  @apply bg-black hover:bg-gray-800 text-white px-8 py-3 rounded-full font-medium transition-all duration-300 hover:scale-105 active:scale-95;
 }
 
 .button-secondary {
-  @apply bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-primary px-4 py-2 rounded-md font-medium transition-all duration-200 hover:shadow-md;
+  @apply bg-white hover:bg-gray-50 text-black px-8 py-3 rounded-full font-medium transition-all duration-300 hover:scale-105;
 }
 
 .filter-chip {

@@ -94,7 +94,7 @@ const AIAssistant: React.FC = () => {
         </div>
         <div>
           <h3 className="font-semibold text-gray-900 dark:text-white">AI Shopping Assistant</h3>
-          <p className="text-xs text-gray-500 dark:text-gray-400">Powered by DeepSeek AI</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">Powered by OpenAI</p>
         </div>
       </div>
 
