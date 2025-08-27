@@ -1,12 +1,17 @@
 from typing import List, Dict, Any, Optional
 from django.contrib.auth.models import User
 from ..models import Product, UserBehavior, ConversationHistory
-from .ai_service import ai_service
+import google.generativeai as genai
 import logging
+import json
 
 logger = logging.getLogger(__name__)
 
 class ConversationalShoppingService:
+    def __init__(self):
+        self.api_key = "AIzaSyDEVfJYhLbe6NELrNZuJ63Hqj1rY-LBJto"
+        genai.configure(api_key=self.api_key)
+        self.model = genai.GenerativeModel('gemini-1.5-flash')
     
     def create_shopping_list(self, user_id: int, items: List[str]) -> Dict:
         """Create AI-powered shopping list with product suggestions"""
@@ -18,10 +23,12 @@ class ConversationalShoppingService:
             Format as a structured shopping list with categories.
             """
             
-            ai_suggestions = ai_service.chat_completion([
-                {'role': 'system', 'content': 'You are a helpful shopping assistant.'},
-                {'role': 'user', 'content': suggestions_prompt}
-            ])
+            try:
+                response = self.model.generate_content(suggestions_prompt)
+                ai_suggestions = response.text
+            except Exception as e:
+                logger.error(f"Gemini API error: {e}")
+                ai_suggestions = "AI suggestions temporarily unavailable"
             
             # Track behavior
             UserBehavior.objects.create(
@@ -64,10 +71,12 @@ class ConversationalShoppingService:
             4. Timing suggestions
             """
             
-            guidance = ai_service.chat_completion([
-                {'role': 'system', 'content': 'You are an expert shopping advisor.'},
-                {'role': 'user', 'content': guidance_prompt}
-            ])
+            try:
+                response = self.model.generate_content(guidance_prompt)
+                guidance = response.text
+            except Exception as e:
+                logger.error(f"Gemini API error: {e}")
+                guidance = "Shopping guidance temporarily unavailable"
             
             return {
                 'guidance': guidance,
@@ -99,10 +108,12 @@ class ConversationalShoppingService:
             3. Follow-up questions to clarify needs
             """
             
-            response = ai_service.chat_completion([
-                {'role': 'system', 'content': 'You are a voice shopping assistant.'},
-                {'role': 'user', 'content': voice_prompt}
-            ])
+            try:
+                ai_response = self.model.generate_content(voice_prompt)
+                response = ai_response.text
+            except Exception as e:
+                logger.error(f"Gemini API error: {e}")
+                response = "Voice processing temporarily unavailable"
             
             # Track voice interaction
             UserBehavior.objects.create(

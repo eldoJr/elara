@@ -2,6 +2,7 @@ from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
 from . import views
+from . import ai_endpoints
 
 app_name = 'djangoapp'
 urlpatterns = [
@@ -75,5 +76,12 @@ urlpatterns = [
     path('profile', views.get_profile, name='get_profile_no_slash'),
     path('profile/update/', views.update_profile, name='update_profile'),
     path('profile/update', views.update_profile, name='update_profile_no_slash'),
+    
+    # Gemini AI Endpoints
+    path('ai/bundles/', ai_endpoints.generate_product_bundles, name='ai_bundles'),
+    path('ai/search-enhance/', ai_endpoints.enhance_search_results, name='ai_search_enhance'),
+    path('ai/marketing/', ai_endpoints.generate_marketing_content, name='ai_marketing'),
+    path('ai/sentiment/', ai_endpoints.analyze_product_sentiment, name='ai_sentiment'),
+    path('ai/description/', ai_endpoints.generate_product_description, name='ai_description'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -18,6 +18,7 @@ from .services.predictive_service import predictive_service
 from .services.notification_service import notification_service
 from .services.personalization_service import personalization_service
 from .services.smart_cart_service import smart_cart_service
+from .services.gemini_service import gemini_service
 
 logger = logging.getLogger(__name__)
 
@@ -566,11 +567,11 @@ def ai_chat(request):
                 session_id=session_id
             )
         
-        # Generate AI response
-        ai_response = ai_service.process_shopping_query(
-            query=message,
-            products=products_data,
-            user_context=user_context
+        # Generate AI response using Gemini
+        ai_response = gemini_service.personalized_shopping_assistant(
+            user_query=message,
+            user_context=user_context,
+            products=products_data
         )
         
         # Save conversation history

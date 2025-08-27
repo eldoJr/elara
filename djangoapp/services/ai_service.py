@@ -1,75 +1,74 @@
 import json
 import logging
 from typing import List, Dict, Any, Optional
+import google.generativeai as genai
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
-try:
-    from transformers import pipeline
-    HAS_TRANSFORMERS = True
-except ImportError:
-    HAS_TRANSFORMERS = False
-
-class LocalAIService:
+class GeminiAIService:
     def __init__(self):
-        self.generator = None
-        if HAS_TRANSFORMERS:
-            try:
-                self.generator = pipeline('text-generation', model='microsoft/DialoGPT-small')
-            except Exception as e:
-                logger.warning(f"Failed to load AI model: {e}")
-                self.generator = None
+        self.api_key = "AIzaSyDEVfJYhLbe6NELrNZuJ63Hqj1rY-LBJto"
+        genai.configure(api_key=self.api_key)
+        self.model = genai.GenerativeModel('gemini-1.5-flash')
+        self.chat_model = genai.GenerativeModel('gemini-1.5-flash')
     
-    def generate_response(self, prompt: str, max_length: int = 100) -> str:
-        """Generate AI response using local model"""
-        if not self.generator:
-            return self._generate_fallback_response(prompt, [], None)
-        
+    def generate_response(self, prompt: str, max_tokens: int = 150) -> str:
+        """Generate AI response using Gemini API"""
         try:
-            response = self.generator(prompt, max_length=max_length, num_return_sequences=1, pad_token_id=50256)
-            generated_text = response[0]['generated_text']
-            # Extract only the new part after the prompt
-            if len(generated_text) > len(prompt):
-                return generated_text[len(prompt):].strip()
-            return "I'm here to help you with your shopping needs!"
+            response = self.model.generate_content(
+                prompt,
+                generation_config=genai.types.GenerationConfig(
+                    max_output_tokens=max_tokens,
+                    temperature=0.7
+                )
+            )
+            return response.text.strip()
         except Exception as e:
-            logger.error(f"Local AI error: {e}")
+            logger.error(f"Gemini AI error: {e}")
             return self._generate_fallback_response(prompt, [], None)
     
     def generate_product_recommendations(self, user_context: Dict[str, Any], products: List[Dict]) -> str:
-        """Generate personalized product recommendations"""
-        system_prompt = """You are an AI shopping assistant for Elara e-commerce platform. 
-        Analyze the user's context and recommend relevant products from the available catalog.
-        Provide helpful, personalized recommendations with brief explanations."""
+        """Generate personalized product recommendations using Gemini"""
+        prompt = f"""You are an AI shopping assistant for Elara e-commerce platform.
         
-        user_prompt = f"""
-        User Context: {json.dumps(user_context)}
-        Available Products: {json.dumps(products[:10])}  # Limit for API efficiency
+User Context: {json.dumps(user_context, indent=2)}
         
-        Please recommend 3-5 products that would be most relevant to this user and explain why.
-        """
+Available Products: {json.dumps(products[:10], indent=2)}
         
-        messages = [
-            {'role': 'system', 'content': system_prompt},
-            {'role': 'user', 'content': user_prompt}
-        ]
+Analyze the user's shopping behavior and preferences to recommend 3-5 most relevant products. 
+Provide brief explanations for each recommendation focusing on why it matches their needs.
         
-        return self.chat_completion(messages)
+Format your response as a friendly shopping assistant."""
+        
+        return self.generate_response(prompt, max_tokens=300)
     
     def process_shopping_query(self, query: str, products: List[Dict], user_context: Optional[Dict] = None) -> str:
-        """Process natural language shopping queries with intelligent fallback"""
-        # Try local AI first
-        if self.generator:
-            try:
-                context = f"User: {user_context.get('username', 'Customer')} is shopping. Products available: {', '.join([p['name'] for p in products[:5]])}."
-                prompt = f"{context}\nCustomer: {query}\nAssistant:"
-                response = self.generate_response(prompt, max_length=150)
-                if response and len(response) > 10:
-                    return response
-            except Exception as e:
-                logger.error(f"Local AI failed: {e}")
+        """Process natural language shopping queries using Gemini AI"""
+        try:
+            username = user_context.get('username', 'Customer') if user_context else 'Customer'
+            product_names = [p['name'] for p in products[:8]]
+            
+            prompt = f"""You are a helpful AI shopping assistant for Elara e-commerce platform.
+            
+Customer: {username}
+Query: "{query}"
+            
+Available products: {', '.join(product_names)}
+            
+Provide a helpful, conversational response that:
+            1. Addresses their specific query
+            2. Suggests relevant products if applicable
+            3. Offers additional assistance
+            
+Keep the response concise and friendly (2-3 sentences max)."""
+            
+            response = self.generate_response(prompt, max_tokens=200)
+            if response and len(response.strip()) > 10:
+                return response
+        except Exception as e:
+            logger.error(f"Gemini AI failed: {e}")
         
-        # Fallback to intelligent responses
         return self._generate_fallback_response(query, products, user_context)
     
     def _generate_fallback_response(self, query: str, products: List[Dict], user_context: Optional[Dict] = None) -> str:
@@ -125,4 +124,4 @@ class LocalAIService:
         return "I'm your AI shopping assistant! I can help you find products, answer questions about items, and guide you through our catalog. Try asking about specific categories like electronics, clothing, or home goods, or let me know what you're shopping for today!"
 
 # Global instance
-ai_service = LocalAIService()
+ai_service = GeminiAIService()

@@ -27,8 +27,9 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-your-secret-key-here'
 
-# OpenAI Configuration
+# AI Configuration
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', '')
+GEMINI_API_KEY = 'AIzaSyDEVfJYhLbe6NELrNZuJ63Hqj1rY-LBJto'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
