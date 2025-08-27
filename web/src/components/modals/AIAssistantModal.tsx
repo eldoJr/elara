@@ -20,7 +20,6 @@ const AIAssistantModal: React.FC<AIAssistantModalProps> = ({ isOpen, onClose }) 
             </div>
             <div>
               <h3 className="text-xl font-semibold text-gray-900">AI Shopping Assistant</h3>
-              <p className="text-sm text-gray-600">Powered by Gemini AI</p>
             </div>
           </div>
           <button
