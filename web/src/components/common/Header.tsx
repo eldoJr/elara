@@ -24,9 +24,6 @@ const Header: React.FC = () => {
           <div className="flex items-center justify-between h-12">
             {/* Left Side - Logo/Brand */}
             <div className="flex items-center">
-              <Link to="/" className="text-lg font-semibold text-gray-900 dark:text-white">
-                Elara
-              </Link>
               {isLoggedIn && (
                 <span className="ml-4 text-sm text-gray-600 dark:text-gray-400 hidden sm:block">
                   Welcome, <span className="font-medium text-blue-600 dark:text-blue-400">{username}</span>
