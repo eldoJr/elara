@@ -53,7 +53,7 @@ POST /api/ai/description/                       # Generate product descriptions
 #### **Settings (`settings.py`)**
 ```python
 # AI Configuration
-GEMINI_API_KEY = 'AIzaSyDEVfJYhLbe6NELrNZuJ63Hqj1rY-LBJto'
+GEMINI_API_KEY = ''
 ```
 
 #### **Dependencies (`requirements.txt`)**
