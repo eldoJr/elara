@@ -53,51 +53,55 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   if (view === 'list') {
     return (
-      <div className="group bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-lg hover:border-pink-200 dark:hover:border-pink-700 transition-all duration-300 flex flex-col sm:flex-row">
+      <div className="group bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-xl hover:border-gray-200 dark:hover:border-pink-700 transition-all duration-700 hover:scale-102 flex flex-col sm:flex-row">
         {/* Product Image */}
-        <div className="relative w-full sm:w-32 md:w-40 lg:w-48 h-48 sm:h-32 md:h-40 lg:h-48 flex-shrink-0">
+        <div className="relative w-full sm:w-40 md:w-48 lg:w-56 h-48 sm:h-40 md:h-48 lg:h-56 flex-shrink-0">
           <Link to={`/products/${product.id}`}>
             <img
               src={product.thumbnail || '/placeholder-image.jpg'}
               alt={product.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
             />
           </Link>
           {hasDiscount && (
-            <div className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-gradient-to-r from-orange-500 to-pink-500 text-white px-2 py-1 rounded-full text-xs font-bold">
-              -{Math.round(product.discountPercentage || 0)}%
+            <div className="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-2 rounded-full text-xs font-bold shadow-lg">
+              -{Math.round(product.discountPercentage || 0)}% OFF
             </div>
           )}
         </div>
 
         {/* Product Info */}
-        <div className="flex-1 p-4 sm:p-6 flex flex-col justify-between">
+        <div className="flex-1 p-6 sm:p-8 flex flex-col justify-between">
           <div>
-            <p className="text-xs text-blue-600 dark:text-blue-400 uppercase tracking-wide mb-1 font-medium">
-              {product.brand}
-            </p>
+            {product.brand && (
+              <p className="text-xs text-gray-500 uppercase tracking-wider mb-2 font-medium">
+                {product.brand}
+              </p>
+            )}
             <Link to={`/products/${product.id}`}>
-              <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-2 hover:text-pink-600 transition-colors line-clamp-2">
+              <h3 className="text-xl sm:text-2xl font-medium text-gray-900 dark:text-white mb-3 hover:text-blue-600 transition-colors line-clamp-2 leading-tight">
                 {product.title}
               </h3>
             </Link>
-            <div className="flex items-center gap-2 mb-3">
-              <div className="flex text-sm">
-                {renderStars(product.rating || 0)}
+            {product.rating && (
+              <div className="flex items-center gap-2 mb-4">
+                <div className="flex text-sm text-yellow-400">
+                  {renderStars(product.rating)}
+                </div>
+                <span className="text-sm text-gray-500">
+                  ({product.rating.toFixed(1)})
+                </span>
               </div>
-              <span className="text-sm text-gray-500">
-                ({(product.rating || 0).toFixed(1)})
-              </span>
-            </div>
+            )}
           </div>
           
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-pink-600 to-orange-500 bg-clip-text text-transparent">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-baseline gap-3">
+              <span className="text-2xl sm:text-3xl font-light text-gray-900">
                 ${hasDiscount ? discountedPrice.toFixed(2) : product.price.toFixed(2)}
               </span>
               {hasDiscount && (
-                <span className="text-base sm:text-lg text-gray-500 line-through">
+                <span className="text-lg sm:text-xl text-gray-500 line-through">
                   ${product.price.toFixed(2)}
                 </span>
               )}
@@ -106,7 +110,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <button
               onClick={() => onAddToCart(product.id)}
               disabled={product.availabilityStatus === 'Out of Stock' || product.stock === 0}
-              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white py-2 px-4 sm:px-6 rounded-lg text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg min-h-[44px] flex items-center justify-center"
+              className="bg-black hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-3 px-8 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl flex items-center justify-center"
             >
               {product.availabilityStatus === 'Out of Stock' || product.stock === 0 
                 ? 'Out of Stock' 
@@ -120,33 +124,33 @@ const ProductCard: React.FC<ProductCardProps> = ({
   }
 
   return (
-    <div className="group bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-xl hover:border-pink-200 dark:hover:border-pink-700 transition-all duration-300 hover:-translate-y-1 flex flex-col h-full">
+    <div className="group bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-2xl hover:border-gray-200 dark:hover:border-pink-700 transition-all duration-700 hover:-translate-y-2 hover:scale-102 flex flex-col h-full">
       {/* Product Image */}
       <div className="relative overflow-hidden flex-shrink-0">
         <Link to={`/products/${product.id}`}>
           <img
             src={product.thumbnail || '/placeholder-image.jpg'}
             alt={product.title}
-            className="w-full h-40 sm:h-48 object-cover group-hover:scale-110 transition-transform duration-500"
+            className="w-full h-48 sm:h-56 object-cover group-hover:scale-110 transition-transform duration-700"
           />
         </Link>
         
         {/* Discount Badge */}
         {hasDiscount && (
-          <div className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-gradient-to-r from-orange-500 to-pink-500 text-white px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-bold shadow-lg">
-            -{Math.round(product.discountPercentage || 0)}%
+          <div className="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-2 rounded-full text-xs font-bold shadow-lg backdrop-blur-sm">
+            -{Math.round(product.discountPercentage || 0)}% OFF
           </div>
         )}
         
         {/* Quick Actions */}
-        <div className="absolute top-2 left-2 sm:top-3 sm:left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex gap-1 sm:gap-2">
+        <div className="absolute top-4 left-4 opacity-0 group-hover:opacity-100 transition-all duration-300 flex gap-2">
           {onQuickView && (
             <button
               onClick={() => onQuickView(product)}
-              className="bg-white/90 hover:bg-white text-gray-700 p-1.5 sm:p-2 rounded-full shadow-md transition-all duration-200 hover:scale-110 min-h-[36px] min-w-[36px] flex items-center justify-center"
+              className="bg-white/95 backdrop-blur-sm hover:bg-white text-gray-700 p-2.5 rounded-full shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl"
               title="Quick View"
             >
-              <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
               </svg>
@@ -163,36 +167,40 @@ const ProductCard: React.FC<ProductCardProps> = ({
       </div>
 
       {/* Product Info */}
-      <div className="p-3 sm:p-4 flex flex-col flex-grow">
+      <div className="p-6 flex flex-col flex-grow">
         {/* Brand */}
-        <p className="text-xs text-blue-600 dark:text-blue-400 uppercase tracking-wide mb-1 font-medium">
-          {product.brand}
-        </p>
+        {product.brand && (
+          <p className="text-xs text-gray-500 uppercase tracking-wider mb-2 font-medium">
+            {product.brand}
+          </p>
+        )}
 
         {/* Product Name */}
         <Link to={`/products/${product.id}`} className="flex-grow">
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2 hover:text-pink-600 transition-colors min-h-[2.5rem] flex items-start">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3 line-clamp-2 hover:text-blue-600 transition-colors leading-snug">
             {product.title}
           </h3>
         </Link>
 
         {/* Rating */}
-        <div className="flex items-center gap-1 mb-3">
-          <div className="flex text-sm">
-            {renderStars(product.rating || 0)}
+        {product.rating && (
+          <div className="flex items-center gap-2 mb-4">
+            <div className="flex text-sm text-yellow-400">
+              {renderStars(product.rating)}
+            </div>
+            <span className="text-sm text-gray-500">
+              ({product.rating.toFixed(1)})
+            </span>
           </div>
-          <span className="text-xs text-gray-500 ml-1">
-            ({(product.rating || 0).toFixed(1)})
-          </span>
-        </div>
+        )}
 
         {/* Price */}
-        <div className="flex items-center gap-2 mb-3 sm:mb-4">
-          <span className="text-base sm:text-lg font-bold bg-gradient-to-r from-pink-600 to-orange-500 bg-clip-text text-transparent">
+        <div className="flex items-baseline gap-2 mb-6">
+          <span className="text-2xl font-light text-gray-900">
             ${hasDiscount ? discountedPrice.toFixed(2) : product.price.toFixed(2)}
           </span>
           {hasDiscount && (
-            <span className="text-sm text-gray-500 line-through">
+            <span className="text-lg text-gray-500 line-through">
               ${product.price.toFixed(2)}
             </span>
           )}
@@ -202,7 +210,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <button
           onClick={() => onAddToCart(product.id)}
           disabled={product.availabilityStatus === 'Out of Stock' || product.stock === 0}
-          className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white py-2.5 sm:py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg min-h-[44px] flex items-center justify-center mt-auto"
+          className="w-full bg-black hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-3 px-6 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl flex items-center justify-center mt-auto"
         >
           {product.availabilityStatus === 'Out of Stock' || product.stock === 0 
             ? 'Out of Stock' 
