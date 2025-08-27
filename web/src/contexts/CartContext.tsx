@@ -4,6 +4,7 @@ import api from '../config/api';
 interface CartContextType {
   cartCount: number;
   updateCartCount: () => void;
+  addToCart: (productId: number, quantity: number) => Promise<void>;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -34,12 +35,20 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     }
   };
 
+  const addToCart = async (productId: number, quantity: number) => {
+    await api.post('/api/cart/add/', {
+      product_id: productId,
+      quantity
+    });
+    await updateCartCount();
+  };
+
   useEffect(() => {
     updateCartCount();
   }, []);
 
   return (
-    <CartContext.Provider value={{ cartCount, updateCartCount }}>
+    <CartContext.Provider value={{ cartCount, updateCartCount, addToCart }}>
       {children}
     </CartContext.Provider>
   );
