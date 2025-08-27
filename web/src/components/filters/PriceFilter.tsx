@@ -25,7 +25,7 @@ const PriceFilter: React.FC<PriceFilterProps> = ({
           onChange={(e) => onPriceChange([Number(e.target.value), priceRange[1]])}
           min={minPrice}
           max={maxPrice}
-          className="w-16 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+          className="w-16 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
         />
         <span className="text-gray-400">-</span>
         <input
@@ -34,7 +34,7 @@ const PriceFilter: React.FC<PriceFilterProps> = ({
           onChange={(e) => onPriceChange([priceRange[0], Number(e.target.value)])}
           min={minPrice}
           max={maxPrice}
-          className="w-16 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+          className="w-16 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
         />
       </div>
     </div>

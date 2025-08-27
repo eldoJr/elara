@@ -301,21 +301,21 @@ const ProductList: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <Loading size="large" text="Loading products..." />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4 gap-2">
           <Breadcrumb items={[
             { label: 'Store', path: '/' },
             { label: 'Products' }
           ]} />
-          <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-pink-600 via-orange-500 to-blue-600 bg-clip-text text-transparent">
+          <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
             Our Products
           </h1>
         </div>
@@ -406,7 +406,7 @@ const ProductList: React.FC = () => {
         {/* Mobile Filter Button */}
         <button
           onClick={() => setMobileFilterOpen(true)}
-          className="lg:hidden fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-gradient-to-r from-pink-500 to-orange-500 text-white p-3 sm:p-4 rounded-full shadow-lg hover:shadow-xl transition-all z-50"
+          className="lg:hidden fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-blue-600 hover:bg-blue-700 text-white p-3 sm:p-4 rounded-full shadow-lg hover:shadow-xl transition-all z-50"
         >
           <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
@@ -435,7 +435,7 @@ const ProductList: React.FC = () => {
           <div className="fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-50">
             <button
               onClick={() => setIsComparisonOpen(true)}
-              className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-full shadow-lg hover:shadow-xl transition-all flex items-center gap-2 text-sm sm:text-base"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-full shadow-lg hover:shadow-xl transition-all flex items-center gap-2 text-sm sm:text-base"
             >
               <span className="hidden xs:inline">Compare ({comparisonProducts.length})</span>
               <span className="xs:hidden">{comparisonProducts.length}</span>

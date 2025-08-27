@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @import './styles/design-system.css';
+@import './styles/theme.css';
 
 body {
   margin: 0;

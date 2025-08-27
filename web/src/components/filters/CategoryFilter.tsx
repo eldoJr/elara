@@ -32,7 +32,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
               type="checkbox"
               checked={selectedCategories.includes(category.id)}
               onChange={() => onCategoryChange(category.id)}
-              className="w-3 h-3 text-pink-600 border-gray-300 rounded focus:ring-pink-500 focus:ring-1"
+              className="w-3 h-3 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-1"
             />
             <span className="ml-2 text-xs text-gray-700 dark:text-gray-300">
               {category.name}
@@ -42,7 +42,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
         {!showAll && remainingCount > 0 && (
           <button
             onClick={() => setShowAll(true)}
-            className="text-xs text-pink-600 hover:text-pink-700 font-medium"
+            className="text-xs text-blue-600 hover:text-blue-700 font-medium"
           >
             +{remainingCount} more
           </button>

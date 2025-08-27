@@ -92,32 +92,32 @@ const Profile: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-pink-50 to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12 px-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
           {/* Header */}
-          <div className="bg-gradient-to-r from-orange-500 via-pink-500 to-blue-600 p-8 text-white">
+          <div className="bg-blue-600 p-6 text-white">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
-                  <User className="w-8 h-8" />
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                  <User className="w-6 h-6" />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-light">My Profile</h1>
-                  <p className="text-white/80">Manage your account information</p>
+                  <h1 className="text-2xl font-semibold">My Profile</h1>
+                  <p className="text-white/80 text-sm">Manage your account information</p>
                 </div>
               </div>
               <button
                 onClick={() => setIsEditing(!isEditing)}
-                className="bg-white/20 hover:bg-white/30 p-3 rounded-xl transition-colors"
+                className="bg-white/20 hover:bg-white/30 p-2 rounded-lg transition-colors"
               >
-                <Edit3 className="w-5 h-5" />
+                <Edit3 className="w-4 h-4" />
               </button>
             </div>
           </div>
 
           {/* Content */}
-          <div className="p-8">
+          <div className="p-6">
             {message && (
               <div className={`mb-6 p-4 rounded-xl ${
                 message.includes('Error') || message.includes('log in')
@@ -147,7 +147,7 @@ const Profile: React.FC = () => {
                       name="username"
                       value={profile.username}
                       disabled
-                      className="w-full pl-10 pr-4 py-3 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-500 dark:text-gray-400"
+                      className="w-full pl-10 pr-4 py-3 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-500 dark:text-gray-400"
                     />
                   </div>
                 </div>
@@ -164,9 +164,9 @@ const Profile: React.FC = () => {
                       value={profile.email}
                       onChange={handleChange}
                       disabled={!isEditing}
-                      className={`w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white ${
+                      className={`w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white ${
                         isEditing 
-                          ? 'bg-white dark:bg-gray-800 focus:ring-2 focus:ring-orange-500 focus:border-transparent' 
+                          ? 'bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent' 
                           : 'bg-gray-50 dark:bg-gray-800'
                       }`}
                     />
@@ -185,9 +185,9 @@ const Profile: React.FC = () => {
                       value={profile.first_name}
                       onChange={handleChange}
                       disabled={!isEditing}
-                      className={`w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white ${
+                      className={`w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white ${
                         isEditing 
-                          ? 'bg-white dark:bg-gray-800 focus:ring-2 focus:ring-orange-500 focus:border-transparent' 
+                          ? 'bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent' 
                           : 'bg-gray-50 dark:bg-gray-800'
                       }`}
                     />
@@ -206,9 +206,9 @@ const Profile: React.FC = () => {
                       value={profile.last_name}
                       onChange={handleChange}
                       disabled={!isEditing}
-                      className={`w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white ${
+                      className={`w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white ${
                         isEditing 
-                          ? 'bg-white dark:bg-gray-800 focus:ring-2 focus:ring-orange-500 focus:border-transparent' 
+                          ? 'bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent' 
                           : 'bg-gray-50 dark:bg-gray-800'
                       }`}
                     />
@@ -227,9 +227,9 @@ const Profile: React.FC = () => {
                       value={profile.phone}
                       onChange={handleChange}
                       disabled={!isEditing}
-                      className={`w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white ${
+                      className={`w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white ${
                         isEditing 
-                          ? 'bg-white dark:bg-gray-800 focus:ring-2 focus:ring-orange-500 focus:border-transparent' 
+                          ? 'bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent' 
                           : 'bg-gray-50 dark:bg-gray-800'
                       }`}
                     />
@@ -248,9 +248,9 @@ const Profile: React.FC = () => {
                       value={profile.date_of_birth || ''}
                       onChange={handleChange}
                       disabled={!isEditing}
-                      className={`w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white ${
+                      className={`w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white ${
                         isEditing 
-                          ? 'bg-white dark:bg-gray-800 focus:ring-2 focus:ring-orange-500 focus:border-transparent' 
+                          ? 'bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent' 
                           : 'bg-gray-50 dark:bg-gray-800'
                       }`}
                     />
@@ -270,9 +270,9 @@ const Profile: React.FC = () => {
                     onChange={handleChange}
                     disabled={!isEditing}
                     rows={3}
-                    className={`w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white resize-none ${
+                    className={`w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white resize-none ${
                       isEditing 
-                        ? 'bg-white dark:bg-gray-800 focus:ring-2 focus:ring-orange-500 focus:border-transparent' 
+                        ? 'bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent' 
                         : 'bg-gray-50 dark:bg-gray-800'
                     }`}
                     placeholder="Enter your address"
@@ -281,13 +281,13 @@ const Profile: React.FC = () => {
               </div>
               
               {isEditing && (
-                <div className="flex gap-4 pt-6">
+                <div className="flex gap-3 pt-4">
                   <button
                     type="submit"
                     disabled={loading}
-                    className="flex items-center gap-2 bg-gradient-to-r from-orange-500 via-pink-500 to-blue-600 hover:from-orange-600 hover:via-pink-600 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <Save className="w-5 h-5" />
+                    <Save className="w-4 h-4" />
                     {loading ? 'Saving...' : 'Save Changes'}
                   </button>
                   <button
@@ -296,7 +296,7 @@ const Profile: React.FC = () => {
                       setIsEditing(false);
                       fetchProfile();
                     }}
-                    className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300"
+                    className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                   >
                     Cancel
                   </button>
