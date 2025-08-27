@@ -18,7 +18,7 @@ import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Profile from './components/profile/Profile';
 import Orders from './components/orders/Orders';
-import ModernFloatingChat from './components/ai/ModernFloatingChat';
+import FloatingChatBubble from './components/ai/FloatingChatBubble';
 import './App.css';
 
 const MainContent: React.FC = () => {
@@ -67,7 +67,7 @@ function App() {
                 <Header />
                 <MainContent />
                 <Footer />
-                <ModernFloatingChat />
+                <FloatingChatBubble />
                 <ToastContainer />
               </div>
               </Router>

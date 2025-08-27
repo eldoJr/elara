@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MessageCircle, X, Minimize2 } from 'lucide-react';
+import { MessageCircle, X, Minimize2, Sparkles } from 'lucide-react';
 import EnhancedChat from './EnhancedChat';
 import MobileChatDrawer from './MobileChatDrawer';
 
@@ -30,7 +30,7 @@ const FloatingChatBubble: React.FC = () => {
         /* Desktop Chat Window */
         isOpen && (
           <div className={`fixed bottom-20 right-6 z-50 transition-all duration-300 ${
-            isMinimized ? 'w-80 h-16' : 'w-96 h-[600px]'
+            isMinimized ? 'w-80 h-12' : 'w-96 h-[500px]'
           } max-w-[calc(100vw-2rem)] max-h-[calc(100vh-6rem)]`}>
             <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 h-full flex flex-col">
               {/* Chat Header */}
@@ -61,7 +61,7 @@ const FloatingChatBubble: React.FC = () => {
               {/* Chat Content */}
               {!isMinimized && (
                 <div className="flex-1 overflow-hidden">
-                  <EnhancedChat />
+                  <EnhancedChat hideHeader={true} />
                 </div>
               )}
             </div>
@@ -72,22 +72,15 @@ const FloatingChatBubble: React.FC = () => {
       {/* Floating Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed bottom-6 right-6 z-50 w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 ${
-          isOpen ? 'rotate-180' : ''
+        className={`fixed bottom-6 right-6 z-50 w-14 h-14 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 ${
+          isOpen ? 'rotate-180' : 'hover:scale-105'
         }`}
+        title={isOpen ? 'Close chat' : 'Open AI Assistant'}
       >
         {isOpen ? (
-          <X className="w-8 h-8 mx-auto" />
+          <X className="w-6 h-6 mx-auto" />
         ) : (
-          <div className="relative">
-            <MessageCircle className="w-8 h-8 mx-auto" />
-            {/* Notification Badge */}
-            <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
-              <span className="text-xs text-white font-bold">1</span>
-            </div>
-            {/* Pulse Animation */}
-            <div className="absolute inset-0 rounded-full bg-blue-400 animate-ping opacity-20"></div>
-          </div>
+          <MessageCircle className="w-6 h-6 mx-auto" />
         )}
       </button>
     </>

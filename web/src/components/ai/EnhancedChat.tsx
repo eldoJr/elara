@@ -1,19 +1,24 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Mic, Sparkles } from 'lucide-react';
+import { Send, Bot, User, Mic, Sparkles, Check, CheckCheck, Clock, ShoppingBag, TrendingUp, Zap, Star, Lightbulb } from 'lucide-react';
 import { useToast } from '../../contexts/ToastContext';
 import { chatService, ChatMessage, Product } from '../../services/chatService';
 import ChatProductCard from './ChatProductCard';
 
 
 
-const EnhancedChat: React.FC = () => {
+interface EnhancedChatProps {
+  hideHeader?: boolean;
+}
+
+const EnhancedChat: React.FC<EnhancedChatProps> = ({ hideHeader = false }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',
-      text: "Hi! I'm your AI shopping assistant 🛍️ I can help you find products, create bundles, and provide personalized recommendations. What are you looking for today?",
+      text: "Hello! I'm here to help you find the perfect products. What can I help you with today?",
       isUser: false,
       timestamp: new Date(),
-      suggestions: ['Show me electronics', 'Find deals', 'Help me choose', 'What\'s trending?']
+      suggestions: ['Electronics', 'Deals', 'Trending', 'Categories'],
+      status: 'delivered'
     }
   ]);
   const [inputMessage, setInputMessage] = useState('');
@@ -39,7 +44,8 @@ const EnhancedChat: React.FC = () => {
       id: Date.now().toString(),
       text: messageText,
       isUser: true,
-      timestamp: new Date()
+      timestamp: new Date(),
+      status: 'sending'
     };
 
     setMessages(prev => [...prev, userMessage]);
@@ -50,10 +56,15 @@ const EnhancedChat: React.FC = () => {
     try {
       const aiMessage = await chatService.sendMessage(messageText);
       
+      // Update user message status
+      setMessages(prev => prev.map(msg => 
+        msg.id === userMessage.id ? { ...msg, status: 'delivered' } : msg
+      ));
+      
       // Simulate typing delay
       setTimeout(() => {
         setIsTyping(false);
-        setMessages(prev => [...prev, aiMessage]);
+        setMessages(prev => [...prev, { ...aiMessage, status: 'delivered' }]);
       }, 1000);
 
     } catch (error) {
@@ -82,75 +93,91 @@ const EnhancedChat: React.FC = () => {
     showToast(`Reacted with ${reaction}`, 'success');
   };
 
+  const getSmartSuggestions = () => {
+    const timeOfDay = new Date().getHours();
+    const isEvening = timeOfDay >= 18;
+    const isMorning = timeOfDay < 12;
+    
+    if (isMorning) {
+      return [
+        { icon: <Zap className="w-2.5 h-2.5" />, label: 'Deals', query: 'Show me morning deals' },
+        { icon: <User className="w-2.5 h-2.5" />, label: 'Work', query: 'Work essentials' },
+        { icon: <TrendingUp className="w-2.5 h-2.5" />, label: 'Fitness', query: 'Fitness equipment' },
+        { icon: <Sparkles className="w-2.5 h-2.5" />, label: 'Tech', query: 'Latest tech' }
+      ];
+    } else if (isEvening) {
+      return [
+        { icon: <Star className="w-2.5 h-2.5" />, label: 'Home', query: 'Home comfort items' },
+        { icon: <ShoppingBag className="w-2.5 h-2.5" />, label: 'Kitchen', query: 'Kitchen essentials' },
+        { icon: <Lightbulb className="w-2.5 h-2.5" />, label: 'Fun', query: 'Entertainment products' },
+        { icon: <Clock className="w-2.5 h-2.5" />, label: 'Sleep', query: 'Sleep and relaxation' }
+      ];
+    } else {
+      return [
+        { icon: <TrendingUp className="w-2.5 h-2.5" />, label: 'Trending', query: 'What\'s trending?' },
+        { icon: <Zap className="w-2.5 h-2.5" />, label: 'Deals', query: 'Show me the best deals' },
+        { icon: <ShoppingBag className="w-2.5 h-2.5" />, label: 'Cart', query: 'Check my cart' },
+        { icon: <Star className="w-2.5 h-2.5" />, label: 'Top', query: 'Top rated products' }
+      ];
+    }
+  };
+
 
 
   return (
-    <div className="flex flex-col h-[500px] bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-4 text-white">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-            <Sparkles className="w-5 h-5" />
-          </div>
-          <div>
-            <h3 className="font-semibold">AI Shopping Assistant</h3>
-            <p className="text-xs opacity-90">Powered by Gemini AI</p>
-          </div>
-        </div>
-      </div>
-
+    <div className="flex flex-col h-full bg-white">
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
-        {messages.map((message) => (
-          <div key={message.id} className="space-y-2">
-            <div className={`flex gap-3 ${message.isUser ? 'justify-end' : 'justify-start'}`}>
-              {!message.isUser && (
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Bot className="w-4 h-4 text-white" />
-                </div>
-              )}
-              
-              <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl shadow-sm ${
-                message.isUser
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white'
-                  : 'bg-white text-gray-800 border border-gray-200'
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {messages.map((message, index) => (
+          <div key={message.id} className="animate-fadeIn" style={{ animationDelay: `${index * 0.1}s` }}>
+            <div className={`flex items-start gap-3 ${message.isUser ? 'flex-row-reverse' : ''}`}>
+              {/* Avatar */}
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                message.isUser 
+                  ? 'bg-blue-500' 
+                  : 'bg-gradient-to-br from-purple-500 to-blue-600'
               }`}>
-                <p className="text-sm whitespace-pre-wrap">{message.text}</p>
-                <p className={`text-xs mt-2 ${
-                  message.isUser ? 'text-white/70' : 'text-gray-500'
+                {message.isUser ? (
+                  <User className="w-4 h-4 text-white" />
+                ) : (
+                  <Bot className="w-4 h-4 text-white" />
+                )}
+              </div>
+              
+              {/* Message Content */}
+              <div className={`flex-1 max-w-[80%] ${message.isUser ? 'text-right' : ''}`}>
+                <div className={`inline-block px-4 py-2 rounded-2xl text-sm ${
+                  message.isUser
+                    ? 'bg-blue-500 text-white rounded-br-md'
+                    : 'bg-gray-100 text-gray-800 rounded-bl-md'
                 }`}>
-                  {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </p>
-              </div>
-
-              {message.isUser && (
-                <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
-                  <User className="w-4 h-4 text-gray-600" />
+                  {message.text}
                 </div>
-              )}
-            </div>
-
-            {/* Product Cards */}
-            {message.products && message.products.length > 0 && (
-              <div className="flex gap-2 overflow-x-auto pb-2 ml-11">
-                {message.products.map((product) => (
-                  <ChatProductCard 
-                    key={product.id} 
-                    product={product}
-                    onViewProduct={(id) => showToast(`Viewing product ${id}`, 'info')}
-                  />
-                ))}
+                
+                {/* Timestamp & Status */}
+                <div className={`flex items-center gap-1 mt-1 text-xs text-gray-500 ${
+                  message.isUser ? 'justify-end' : 'justify-start'
+                }`}>
+                  <span>{message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                  {message.isUser && message.status && (
+                    <div className="flex items-center">
+                      {message.status === 'sending' && <Clock className="w-3 h-3 text-gray-400" />}
+                      {message.status === 'sent' && <Check className="w-3 h-3 text-gray-400" />}
+                      {message.status === 'delivered' && <CheckCheck className="w-3 h-3 text-blue-500" />}
+                    </div>
+                  )}
+                </div>
               </div>
-            )}
+            </div>
 
             {/* Suggestions */}
             {message.suggestions && message.suggestions.length > 0 && (
-              <div className="flex flex-wrap gap-2 ml-11">
+              <div className="flex flex-wrap gap-2 mt-3 ml-11">
                 {message.suggestions.map((suggestion, idx) => (
                   <button
                     key={idx}
                     onClick={() => handleSuggestionClick(suggestion)}
-                    className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs hover:bg-blue-100 border border-blue-200 transition-colors"
+                    className="px-3 py-1.5 bg-white border border-gray-200 rounded-full text-xs text-gray-700 hover:bg-gray-50 hover:border-blue-300 transition-all duration-200"
                   >
                     {suggestion}
                   </button>
@@ -158,18 +185,36 @@ const EnhancedChat: React.FC = () => {
               </div>
             )}
 
-            {/* Message Reactions */}
-            {!message.isUser && (
-              <div className="flex gap-1 ml-11">
-                {['👍', '❤️', '😊', '🛒'].map(emoji => (
-                  <button
-                    key={emoji}
-                    onClick={() => handleReaction(message.id, emoji)}
-                    className="hover:scale-125 transition-transform text-sm opacity-60 hover:opacity-100"
-                  >
-                    {emoji}
-                  </button>
+            {/* Product Cards */}
+            {message.products && message.products.length > 0 && (
+              <div className="flex gap-3 overflow-x-auto pb-2 mt-3 ml-11">
+                {message.products.map((product) => (
+                  <ChatProductCard 
+                    key={product.id}
+                    product={product}
+                    onViewProduct={(id) => showToast(`Viewing product ${id}`, 'info')}
+                  />
                 ))}
+              </div>
+            )}
+
+            {/* Quick Actions */}
+            {!message.isUser && (
+              <div className="flex gap-2 mt-2 ml-11">
+                <button
+                  onClick={() => handleReaction(message.id, 'helpful')}
+                  className="flex items-center gap-1 px-2 py-1 text-xs text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-all"
+                >
+                  <Star className="w-3 h-3" />
+                  Helpful
+                </button>
+                <button
+                  onClick={() => handleReaction(message.id, 'shop')}
+                  className="flex items-center gap-1 px-2 py-1 text-xs text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-md transition-all"
+                >
+                  <ShoppingBag className="w-3 h-3" />
+                  Shop
+                </button>
               </div>
             )}
           </div>
@@ -177,18 +222,18 @@ const EnhancedChat: React.FC = () => {
         
         {/* Typing Indicator */}
         {isTyping && (
-          <div className="flex gap-3 justify-start">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+          <div className="flex items-start gap-3">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center">
               <Bot className="w-4 h-4 text-white" />
             </div>
-            <div className="bg-white px-4 py-3 rounded-2xl border border-gray-200">
-              <div className="flex items-center space-x-2">
-                <div className="flex space-x-1">
+            <div className="bg-gray-100 px-4 py-2 rounded-2xl rounded-bl-md">
+              <div className="flex items-center gap-2">
+                <div className="flex gap-1">
                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100"></div>
                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200"></div>
                 </div>
-                <span className="text-xs text-gray-500">AI is thinking...</span>
+                <span className="text-xs text-gray-500">AI is typing...</span>
               </div>
             </div>
           </div>
@@ -198,45 +243,60 @@ const EnhancedChat: React.FC = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="px-4 py-2 bg-white border-t border-gray-200">
+      <div className="px-4 py-2 border-t border-gray-100">
         <div className="flex gap-2 overflow-x-auto">
-          {['🔥 Trending', '💰 Deals', '🛒 My Cart', '📦 Orders'].map(action => (
+          {getSmartSuggestions().map((action, idx) => (
             <button
-              key={action}
-              onClick={() => sendMessage(action.split(' ')[1])}
-              className="px-3 py-1 bg-gray-100 rounded-full text-xs whitespace-nowrap hover:bg-gray-200 transition-colors"
+              key={idx}
+              onClick={() => sendMessage(action.query)}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-full text-xs whitespace-nowrap transition-all border border-gray-200 hover:border-gray-300"
             >
-              {action}
+              {action.icon}
+              {action.label}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Input */}
-      <div className="p-4 bg-white border-t border-gray-200">
-        <div className="flex gap-2">
+      {/* Input Area */}
+      <div className="p-4 border-t border-gray-100">
+        <div className="flex items-center gap-3 bg-gray-50 rounded-full px-4 py-2">
           <input
             type="text"
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-            placeholder="Ask me anything about products..."
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            onKeyPress={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+              }
+            }}
+            placeholder="Type your message..."
+            className="flex-1 bg-transparent border-0 outline-none text-sm placeholder-gray-500"
             disabled={isLoading}
+            maxLength={300}
           />
-          <button
-            onClick={() => showToast('Voice input coming soon!', 'info')}
-            className="p-2 text-gray-500 hover:text-blue-500 transition-colors"
-          >
-            <Mic className="w-5 h-5" />
-          </button>
-          <button
-            onClick={() => sendMessage()}
-            disabled={!inputMessage.trim() || isLoading}
-            className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl transition-all shadow-md hover:shadow-lg"
-          >
-            <Send className="w-4 h-4" />
-          </button>
+          
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => showToast('Voice input coming soon', 'info')}
+              className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <Mic className="w-4 h-4" />
+            </button>
+            
+            <button
+              onClick={() => sendMessage()}
+              disabled={!inputMessage.trim() || isLoading}
+              className="p-1.5 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-full transition-all"
+            >
+              {isLoading ? (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Send className="w-4 h-4" />
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </div>

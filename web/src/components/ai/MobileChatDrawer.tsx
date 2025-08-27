@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X, ChevronDown } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, ChevronDown, Maximize2 } from 'lucide-react';
 import EnhancedChat from './EnhancedChat';
 
 interface MobileChatDrawerProps {
@@ -10,6 +10,7 @@ interface MobileChatDrawerProps {
 const MobileChatDrawer: React.FC<MobileChatDrawerProps> = ({ isOpen, onClose }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [startY, setStartY] = useState(0);
+  const [isFullScreen, setIsFullScreen] = useState(false);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setIsDragging(true);
@@ -57,20 +58,38 @@ const MobileChatDrawer: React.FC<MobileChatDrawerProps> = ({ isOpen, onClose }) 
           <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
         </div>
         
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 pb-2">
-          <h3 className="text-lg font-semibold text-gray-900">AI Assistant</h3>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
+        {/* Enhanced Header */}
+        <div className="flex items-center justify-between px-4 pb-2 bg-gradient-to-r from-blue-50 to-purple-50">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+              <span className="text-white text-sm font-bold">AI</span>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">AI Assistant</h3>
+              <p className="text-xs text-gray-600">Online • Ready to help</p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setIsFullScreen(!isFullScreen)}
+              className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+              title={isFullScreen ? 'Exit fullscreen' : 'Fullscreen'}
+            >
+              <Maximize2 className="w-4 h-4" />
+            </button>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+              title="Close chat"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
         
         {/* Chat Content */}
-        <div className="h-[70vh] overflow-hidden">
-          <EnhancedChat />
+        <div className={`${isFullScreen ? 'h-[90vh]' : 'h-[80vh]'} overflow-hidden transition-all duration-300`}>
+          <EnhancedChat hideHeader={true} />
         </div>
       </div>
     </>

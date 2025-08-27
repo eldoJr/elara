@@ -5,7 +5,7 @@
 ### **1. EnhancedChat.tsx**
 - Modern gradient design with blue-to-purple theme
 - Typing indicators with animated dots
-- Message reactions (👍❤️😊🛒)
+- Message reactions 
 - Smart suggestions as clickable buttons
 - Product card integration
 - Quick action buttons

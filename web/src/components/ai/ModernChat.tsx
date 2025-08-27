@@ -81,17 +81,6 @@ const ModernChat: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full bg-white dark:bg-black">
-      {/* Header */}
-      <div className="flex items-center gap-3 p-4 border-b border-gray-200 dark:border-gray-800">
-        <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-          <Bot className="w-4 h-4 text-white" />
-        </div>
-        <div>
-          <h3 className="font-medium text-gray-900 dark:text-white text-sm">AI Assistant</h3>
-          <p className="text-xs text-gray-500 dark:text-gray-400">Online</p>
-        </div>
-      </div>
-
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {messages.map((message) => (

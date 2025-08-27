@@ -7,6 +7,7 @@ export interface ChatMessage {
   timestamp: Date;
   products?: Product[];
   suggestions?: string[];
+  status?: 'sending' | 'sent' | 'delivered' | 'failed';
 }
 
 export interface Product {
