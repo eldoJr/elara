@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MessageCircle, X, Minimize2, Sparkles } from 'lucide-react';
-import EnhancedChat from './EnhancedChat';
+import ProfessionalChat from './ProfessionalChat';
 import MobileChatDrawer from './MobileChatDrawer';
 
 const FloatingChatBubble: React.FC = () => {
@@ -61,7 +61,7 @@ const FloatingChatBubble: React.FC = () => {
               {/* Chat Content */}
               {!isMinimized && (
                 <div className="flex-1 overflow-hidden">
-                  <EnhancedChat hideHeader={true} />
+                  <ProfessionalChat hideHeader={true} />
                 </div>
               )}
             </div>

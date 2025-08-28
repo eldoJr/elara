@@ -6,8 +6,8 @@
 // - Message status indicators
 // - Mobile responsiveness
 
-import EnhancedChat from './EnhancedChat';
+import ProfessionalChat from './ProfessionalChat';
 
-const AIAssistant = EnhancedChat;
+const AIAssistant = ProfessionalChat;
 
 export default AIAssistant;

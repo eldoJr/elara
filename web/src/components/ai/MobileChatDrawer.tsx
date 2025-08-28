@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, ChevronDown, Maximize2 } from 'lucide-react';
-import EnhancedChat from './EnhancedChat';
+import ProfessionalChat from './ProfessionalChat';
 
 interface MobileChatDrawerProps {
   isOpen: boolean;
@@ -89,7 +89,7 @@ const MobileChatDrawer: React.FC<MobileChatDrawerProps> = ({ isOpen, onClose }) 
         
         {/* Chat Content */}
         <div className={`${isFullScreen ? 'h-[90vh]' : 'h-[80vh]'} overflow-hidden transition-all duration-300`}>
-          <EnhancedChat hideHeader={true} />
+          <ProfessionalChat hideHeader={true} />
         </div>
       </div>
     </>

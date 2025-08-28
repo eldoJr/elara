@@ -81,102 +81,98 @@ def logout_request(request):
 
 
 def get_products(request):
-    """Get all products from database API with fallback to local DB"""
+    """Get products using intelligent product service"""
+    from .services.product_intelligence_service import product_intelligence_service
+    
     category = request.GET.get('category')
     search = request.GET.get('search')
     brand = request.GET.get('brand')
-    limit = int(request.GET.get('limit', 1000))
+    limit = int(request.GET.get('limit', 20))
     offset = int(request.GET.get('offset', 0))
     
-    # Try external database service first
     try:
-        products = db_service.get_products(
-            category=int(category) if category else None,
-            brand=brand,
-            search=search,
-            limit=limit,
-            offset=offset
-        )
-        
-        if products:
-            # Transform external API data for frontend compatibility
-            products_data = []
-            for product in products:
-                # Get category name
-                category_name = 'Uncategorized'
-                try:
-                    category = Category.objects.get(id=product.get('category_id'))
-                    category_name = category.name
-                except Category.DoesNotExist:
-                    pass
-                
-                products_data.append({
-                    'id': product['id'],
-                    'title': product['name'],
-                    'name': product['name'],
-                    'description': product['description'],
-                    'price': product['price'],
-                    'discountPercentage': product.get('discount_percentage', 0),
-                    'rating': product.get('rating', 0),
-                    'stock': product.get('stock_quantity', 0),
-                    'brand': product.get('brand', ''),
-                    'category': category_name,
-                    'thumbnail': product.get('image_url', ''),
-                    'images': product.get('images', []),
-                    'availabilityStatus': product.get('availability_status', 'In Stock'),
-                    'sku': product.get('sku', ''),
-                })
+        # Get user preferences if authenticated
+        user_preferences = None
+        if request.user.is_authenticated:
+            # Get user behavior for preferences
+            recent_behaviors = UserBehavior.objects.filter(
+                user=request.user,
+                action__in=['VIEW', 'PURCHASE', 'ADD_TO_CART']
+            ).order_by('-timestamp')[:20]
             
-            return JsonResponse({
-                "products": products_data,
-                "total": len(products_data),
-                "skip": offset,
-                "limit": limit
+            if recent_behaviors:
+                user_preferences = {
+                    'preferred_categories': list(set(
+                        b.product.category_id for b in recent_behaviors 
+                        if b.product and b.product.category_id
+                    )),
+                    'price_range': {
+                        'min': min(float(b.product.price) for b in recent_behaviors if b.product),
+                        'max': max(float(b.product.price) for b in recent_behaviors if b.product)
+                    }
+                }
+        
+        # Use intelligent product service
+        if search:
+            products = product_intelligence_service.intelligent_search(
+                query=search,
+                limit=limit + offset,
+                user_preferences=user_preferences
+            )
+        elif category:
+            products = product_intelligence_service.get_products_by_category(
+                category_id=int(category),
+                limit=limit + offset
+            )
+        else:
+            products = product_intelligence_service.get_trending_products(limit + offset)
+        
+        # Apply offset
+        products = products[offset:offset + limit]
+        
+        # Transform for frontend compatibility
+        products_data = []
+        category_names = {1: 'Beauty', 2: 'Fragrances', 3: 'Furniture'}
+        
+        for product in products:
+            category_name = category_names.get(product.get('category_id'), 'General')
+            
+            products_data.append({
+                'id': product['id'],
+                'title': product['name'],
+                'name': product['name'],
+                'description': product['description'],
+                'price': product['price'],
+                'discountPercentage': product.get('discount_percentage', 0),
+                'rating': product.get('rating', 0),
+                'stock': product.get('stock_quantity', 0),
+                'brand': product.get('brand', ''),
+                'category': category_name,
+                'thumbnail': product.get('image_url', ''),
+                'images': product.get('images', []),
+                'availabilityStatus': product.get('availability_status', 'In Stock'),
+                'sku': product.get('sku', f'SKU-{product["id"]}'),
+                'popularityScore': product.get('popularity_score', 0),
+                'valueScore': product.get('value_score', 0)
             })
-    except Exception as e:
-        logger.warning(f"External database service failed: {e}. Using local database.")
-    
-    # Fallback to local database
-    queryset = Product.objects.filter(is_active=True)
-    
-    if category:
-        queryset = queryset.filter(category_id=category)
-    if brand:
-        queryset = queryset.filter(brand__icontains=brand)
-    if search:
-        queryset = queryset.filter(
-            models.Q(name__icontains=search) | 
-            models.Q(description__icontains=search)
-        )
-    
-    total_count = queryset.count()
-    products = queryset[offset:offset + limit]
-    
-    products_data = []
-    for product in products:
-        products_data.append({
-            'id': product.id,
-            'title': product.name,
-            'name': product.name,
-            'description': product.description,
-            'price': float(product.price),
-            'discountPercentage': float(product.discount_percentage or 0),
-            'rating': float(product.rating or 0),
-            'stock': product.stock_quantity,
-            'brand': product.brand or '',
-            'category': product.category.name if product.category else 'Uncategorized',
-            'thumbnail': product.image_url or '',
-            'images': [product.image_url] if product.image_url else [],
-            'availabilityStatus': product.availability_status,
-            'sku': product.sku or f'SKU-{product.id}',
+        
+        return JsonResponse({
+            "products": products_data,
+            "total": len(products_data),
+            "skip": offset,
+            "limit": limit,
+            "intelligent": True
         })
-    
-    return JsonResponse({
-        "products": products_data,
-        "total": total_count,
-        "skip": offset,
-        "limit": limit
-    })
+        
+    except Exception as e:
+        logger.error(f"Intelligent products service error: {e}")
+        return JsonResponse({
+            "products": [],
+            "total": 0,
+            "skip": offset,
+            "limit": limit,
+            "error": "Service temporarily unavailable"
+        })
 
 
 def get_product_detail(request, product_id):
@@ -520,89 +516,91 @@ def update_profile(request):
 
 @csrf_exempt
 def ai_chat(request):
-    """Enhanced AI Assistant chat endpoint with DeepSeek integration"""
+    """Professional AI Assistant chat endpoint"""
     if request.method != 'POST':
         return JsonResponse({"error": "POST method required"}, status=405)
     
     try:
-        from .services.ai_service import ai_service
+        from .services.professional_ai_service import professional_ai_service
         
         data = json.loads(request.body)
-        message = data.get('message', '')
+        message = data.get('message', '').strip()
         session_id = data.get('session_id', '')
         
-        # Get recent products for context
-        products = Product.objects.filter(is_active=True)[:20]
-        products_data = [{
-            'id': p.id,
-            'name': p.name,
-            'price': float(p.price),
-            'category': p.category.name,
-            'brand': p.brand or '',
-            'rating': float(p.rating or 0)
-        } for p in products]
+        # Get user ID if authenticated
+        user_id = request.user.id if request.user.is_authenticated else None
         
-        # Get user context if authenticated
-        user_context = {}
+        # Track user behavior
         if request.user.is_authenticated:
-            # Get recent user behaviors
-            recent_behaviors = UserBehavior.objects.filter(
-                user=request.user
-            ).order_by('-timestamp')[:10]
-            
-            user_context = {
-                'username': request.user.username,
-                'recent_actions': [{
-                    'action': b.action,
-                    'product': b.product.name if b.product else None,
-                    'metadata': b.metadata
-                } for b in recent_behaviors]
-            }
-            
-            # Track AI chat behavior
-            UserBehavior.objects.create(
-                user=request.user,
-                action='AI_CHAT',
-                metadata={'message': message, 'session_id': session_id},
-                session_id=session_id
-            )
+            try:
+                UserBehavior.objects.create(
+                    user=request.user,
+                    action='AI_CHAT',
+                    metadata={
+                        'message': message[:100],  # Truncate for privacy
+                        'session_id': session_id,
+                        'timestamp': datetime.now().isoformat()
+                    },
+                    session_id=session_id
+                )
+            except Exception as e:
+                logger.warning(f"Behavior tracking failed: {e}")
         
-        # Generate AI response using Gemini
-        ai_response = gemini_service.personalized_shopping_assistant(
-            user_query=message,
-            user_context=user_context,
-            products=products_data
+        # Process query with professional AI service
+        response = professional_ai_service.process_user_query(
+            message=message,
+            session_id=session_id,
+            user_id=user_id
         )
         
         # Save conversation history
         if request.user.is_authenticated:
-            ConversationHistory.objects.create(
-                user=request.user,
-                session_id=session_id,
-                message=message,
-                response=ai_response,
-                context={'products_count': len(products_data)}
-            )
+            try:
+                ConversationHistory.objects.create(
+                    user=request.user,
+                    session_id=session_id,
+                    message=message,
+                    response=response['response'],
+                    context={
+                        'products_count': len(response.get('products', [])),
+                        'suggestions_count': len(response.get('suggestions', [])),
+                        'actions_count': len(response.get('actions', []))
+                    }
+                )
+            except Exception as e:
+                logger.warning(f"Conversation history save failed: {e}")
+        
+        # Periodic cleanup
+        professional_ai_service.cleanup_expired_sessions()
+        
+        # Transform products for frontend
+        products = []
+        for product in response.get('products', []):
+            products.append({
+                'id': product['id'],
+                'name': product['name'],
+                'price': product['price'],
+                'image': product.get('image_url', ''),
+                'category': product.get('category_id'),
+                'rating': product.get('rating', 0),
+                'brand': product.get('brand', ''),
+                'availability': product.get('availability_status', 'In Stock')
+            })
         
         return JsonResponse({
-            "response": ai_response,
-            "suggestions": [
-                "Show me trending products",
-                "What's on sale today?",
-                "Help me find electronics",
-                "Recommend products for me"
-            ]
+            "response": response['response'],
+            "products": products,
+            "suggestions": response.get('suggestions', []),
+            "actions": response.get('actions', [])
         })
         
     except Exception as e:
         logger.error(f"AI chat error: {str(e)}")
         return JsonResponse({
-            "response": "I'm sorry, I'm having trouble processing your request right now. Please try again later.",
-            "suggestions": [
-                "Browse our products",
-                "Check out popular items",
-                "Visit our categories"
-            ]
+            "response": "I'm experiencing technical difficulties. Please try again.",
+            "products": [],
+            "suggestions": ["Browse Products", "View Categories", "Contact Support"],
+            "actions": []
         })
 
 

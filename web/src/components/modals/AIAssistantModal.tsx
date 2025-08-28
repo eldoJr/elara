@@ -1,6 +1,6 @@
 import React from 'react';
 import { X, Sparkles } from 'lucide-react';
-import EnhancedChat from '../ai/EnhancedChat';
+import ProfessionalChat from '../ai/ProfessionalChat';
 
 interface AIAssistantModalProps {
   isOpen: boolean;
@@ -31,7 +31,7 @@ const AIAssistantModal: React.FC<AIAssistantModalProps> = ({ isOpen, onClose }) 
           </button>
         </div>
         <div className="h-[calc(85vh-5rem)]">
-          <EnhancedChat hideHeader={true} />
+          <ProfessionalChat hideHeader={true} />
         </div>
       </div>
     </div>

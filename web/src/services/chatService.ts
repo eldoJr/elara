@@ -7,7 +7,15 @@ export interface ChatMessage {
   timestamp: Date;
   products?: Product[];
   suggestions?: string[];
+  actions?: ChatAction[];
   status?: 'sending' | 'sent' | 'delivered' | 'failed';
+}
+
+export interface ChatAction {
+  type: 'view_product' | 'add_to_cart' | 'browse_category';
+  product_id?: number;
+  category_id?: number;
+  label: string;
 }
 
 export interface Product {
@@ -33,7 +41,17 @@ class ChatService {
         session_id: this.sessionId
       });
 
-      const products = await this.extractProducts(message);
+      // Transform backend products to frontend format
+      const products = (response.data.products || []).map((product: any) => ({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image || '/api/placeholder/150/120',
+        category: this.getCategoryName(product.category),
+        rating: product.rating || 0,
+        brand: product.brand || '',
+        availability: product.availability || 'In Stock'
+      }));
       
       return {
         id: Date.now().toString(),
@@ -41,11 +59,22 @@ class ChatService {
         isUser: false,
         timestamp: new Date(),
         products,
-        suggestions: response.data.suggestions || []
+        suggestions: response.data.suggestions || [],
+        actions: response.data.actions || []
       };
     } catch (error) {
-      throw new Error('Failed to send message');
+      console.error('Chat service error:', error);
+      throw new Error('Unable to process your request. Please try again.');
     }
+  }
+
+  private getCategoryName(categoryId: number): string {
+    const categories: { [key: number]: string } = {
+      1: 'Beauty',
+      2: 'Fragrances',
+      3: 'Furniture'
+    };
+    return categories[categoryId] || 'General';
   }
 
   async getProductBundles(productId: number) {
@@ -57,28 +86,7 @@ class ChatService {
     }
   }
 
-  private async extractProducts(userMessage: string): Promise<Product[]> {
-    const keywords = ['laptop', 'phone', 'electronics', 'clothing', 'beauty', 'mascara'];
-    const hasProductQuery = keywords.some(keyword => 
-      userMessage.toLowerCase().includes(keyword)
-    );
 
-    if (!hasProductQuery) return [];
-
-    try {
-      const response = await api.get('/api/products/', { params: { limit: 3 } });
-      return response.data.products.map((product: any) => ({
-        id: product.id,
-        name: product.name || product.title,
-        price: product.price,
-        image: product.thumbnail,
-        category: product.category,
-        rating: product.rating
-      }));
-    } catch (error) {
-      return [];
-    }
-  }
 
   getSessionId(): string {
     return this.sessionId;
